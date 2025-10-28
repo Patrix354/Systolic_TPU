@@ -1,0 +1,88 @@
+.venv/*
+venv/*
+env/
+# Cache i kompilaty
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.cache/
+.pytest_cache/
+.tox/
+.nox/
+.mypy_cache/
+.pyre/
+.pytype/
+.coverage
+coverage.xml
+htmlcov/
+pip-wheel-metadata/
+.python-version
+
+# cocotb (domyślne katalogi i wyniki)
+sim_build/
+results.xml
+xunit*.xml
+junit*.xml
+
+# Falówki i logi generowane w trakcie testów
+*.vcd
+*.fst
+*.ghw
+*.wlf
+*.log
+*.jou
+*.wdb
+
+# =========================
+# HDL / SYMULATORY
+# =========================
+# GHDL
+work-obj93.cf
+*.cf
+ghdl_work/
+
+# Verilator
+obj_dir/
+logs/
+coverage_dat/
+annotated/
+*.daidir
+
+# GTKWave
+*.gtkw
+*.sav
+*.cfg
+
+# =========================
+# ARTEFAKTY BUDOWANIA / BINARIA
+# =========================
+build/
+dist/
+*.o
+*.a
+*.out
+*.exe
+*.dll
+
+# =========================
+# EDYTOR / OS „ŚMIECI”
+# =========================
+# VS Code / JetBrains
+.vscode/
+.idea/
+
+# Pliki tymczasowe
+*~
+*.swp
+*.swo
+
+# Systemowe
+.DS_Store
+Thumbs.db
+
+# Pliki Wykonywalne symulacji
+tests/MAC_Cell_tests/mac_cell
