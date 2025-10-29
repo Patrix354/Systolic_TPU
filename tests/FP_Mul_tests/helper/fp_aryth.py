@@ -28,11 +28,14 @@ if __name__ == "__main__":
     # Przykład:  liczby 1.5 i 2.25 w formacie Q4.4 (4 bity całkowite + 4 ułamkowe)
     a = FixedPoint(1.5, m=4, n=4, signed=True)
     b = FixedPoint(2.25, m=4, n=4, signed=True)
+    d = FixedPoint(-1.5, m=4, n=4, signed=True)
 
     print("a =", float(a), "→ raw int =", fixed_to_int(a))
     print("b =", float(b), "→ raw int =", fixed_to_int(b))
+    print("d =", float(d), "→ raw int =", fixed_to_int(d))
 
-    c = fixed_mul(a, b)
+    ab = fixed_mul(a, b)
+    ad = fixed_mul(a, d)
     print("\nWynik mnożenia:")
-    print("c =", float(c), "→ raw int =", fixed_to_int(c))
-
+    print("ab =", float(ab), "→ raw int =", fixed_to_int(ab))
+    print("ad =", float(ad), "→ raw int =", fixed_to_int(ad))
