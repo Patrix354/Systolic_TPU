@@ -11,7 +11,7 @@ TOPLEVEL_LANG ?= vhdl
 # Add VHDL sources
 # Add more sources by replicating the following lines.
 VHDL_SOURCES += $(PWD)/../../RTL/FP_Mul.vhdl
-
+VHDL_SOURCES += $(PWD)/../../RTL/Types.vhdl
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
 TOPLEVEL = fp_mul
 
