@@ -5,6 +5,6 @@ use ieee.numeric_std.all;
 package Types is
 
     subtype QFormat is signed;
-    type QFormat_Array is array (natural range <>) of signed(4 downto 0);
+    type QFormat_Array is array (natural range <>) of signed;
 
 end package Types;
