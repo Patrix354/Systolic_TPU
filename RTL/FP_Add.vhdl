@@ -15,7 +15,7 @@ entity FP_Add is
         i_a     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
         i_b     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
 
-        o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART downto 0)
+        o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0)
     );
 end entity;
 
@@ -28,8 +28,7 @@ begin
             if i_rstn = '0' then
                 o_y <= (others => '0');
             else
-                o_y <= resize(i_a, INTEGER_PART + FRACTIONAL_PART + 1)
-                    + resize(i_b, INTEGER_PART + FRACTIONAL_PART + 1);
+                o_y <= i_a + i_b;
             end if;
         end if;
 
