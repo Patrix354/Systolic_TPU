@@ -13,14 +13,16 @@ Celem projektu jest przygotowanie modelu RTL do symulacji i weryfikacji funkcjon
 - **tests/** – środowisko testowe oparte na frameworku **cocotb**. Zawiera osobne katalogi testów modułów wraz z plikami `Makefile` i skryptami testowymi w Pythonie.  
 - **.venv/** – (nie jest wersjonowany) lokalne środowisko Pythona używane do uruchamiania testów.  
 
+- **wrappers/** - zawiera moduły napisane w języku VHDL używane jako wrappery w symulacji (w przypadku gdy moduł ma więcej niż dwie architektury).
 ---
 
 ## Wymagania
 
 - Python 3.8 lub nowszy  
-- `Cocotb`  
-- Biblioteka `fixedpoint` i `pytest`
-- Symulator VHDL wspierany przez cocotb (np. `NVC`. GHDL nie wspiera w pełni VHDL-2008, który jest używany w tym projekcie)  
+- Cocotb  
+- Pytest
+- Biblioteka `fixedpoint`  
+- Symulator VHDL wspierany przez cocotb (np. NVC. GHDL nie wspiera w pełni VHDL-2008, który jest używany w tym projekcie)  
 - Make
 
 ---
