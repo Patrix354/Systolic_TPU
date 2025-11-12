@@ -47,7 +47,7 @@ entity FP_Add_Layer is
         i_a     : in QFormat_Array(INPUT_SIZE - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
         o_y     : out QFormat_Array((INPUT_SIZE / 2) - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0)
     );
-end entity;
+end entity FP_Add_Layer;
 
 architecture FP_Add_Layer_arch of FP_Add_Layer is 
 
@@ -63,7 +63,7 @@ architecture FP_Add_Layer_arch of FP_Add_Layer is
         i_b     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
         o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0)
     );
-    end component;
+    end component FP_Add;
 
 begin
      LAYER_GEN: for i in 0 to (INPUT_SIZE/2)-1 generate
@@ -81,4 +81,4 @@ begin
          );
      end generate LAYER_GEN;
 
-end architecture;
+end architecture FP_Add_Layer_arch;

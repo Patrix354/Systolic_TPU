@@ -1,6 +1,7 @@
 library ieee;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
+use IEEE.math_real.all;
 use work.Types.all;
 
 entity FP_Add_Array is
@@ -16,7 +17,7 @@ entity FP_Add_Array is
         i_a     : in QFormat_Array(INPUT_SIZE-1 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
         o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0)
     );
-end entity;
+end entity FP_Add_Array;
 
 -- architecture FP_Add_Array_serial_arch of FP_Add_Array is 
 -- begin
@@ -35,7 +36,7 @@ end entity;
 
 architecture FP_Add_Array_pararell_arch of FP_Add_Array is 
 
-    signal s_mid_results : QFormat_Array(INUPT_SIZE - 2 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+    signal s_mid_results : QFormat_Array(INPUT_SIZE - 2 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
 
     component FP_Add_Layer is
         generic (
@@ -56,9 +57,9 @@ architecture FP_Add_Array_pararell_arch of FP_Add_Array is
 
 begin
     
-    ARRAY_GEN: for i in integer(floor(log2(INUPT_SIZE))) downto 1 generate
+    ARRAY_GEN: for i in integer(floor(log2(real(INPUT_SIZE)))) downto 1 generate
         
-        INPUT_LAYER: if (i = integer(floor(log2(INUPT_SIZE)))) generate 
+        INPUT_LAYER: if (i = integer(floor(log2(real(INPUT_SIZE))))) generate 
             SINGLE_FP_LAYER: FP_Add_Layer
             generic map(
                 INTEGER_PART => INTEGER_PART,
@@ -73,7 +74,7 @@ begin
             );
         end generate INPUT_LAYER;
 
-        MIDDLE_LAYERS: if (i /= integer(floor(log2(INUPT_SIZE)))) generate
+        MIDDLE_LAYERS: if (i /= integer(floor(log2(real(INPUT_SIZE))))) generate
             SINGLE_FP_LAYER: FP_Add_Layer
             generic map(
                 INTEGER_PART => INTEGER_PART,
@@ -88,8 +89,8 @@ begin
             );
         end generate MIDDLE_LAYERS;
         
-     end generate LAYER_GEN;
+     end generate ARRAY_GEN;
 
     o_y <= s_mid_results(0);
 
-end architecture;
+end architecture FP_Add_Array_pararell_arch;

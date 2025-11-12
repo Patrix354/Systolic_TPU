@@ -1,6 +1,5 @@
 # Simulator to be used.
 SIM ?= nvc
-SIM_ARGS += --std=2008
 #EXTRA_ARGS += 
 
 # Additional simulator args
