@@ -77,63 +77,63 @@ begin
 
 end architecture;
 
--- architecture FP_Add_Array_pararell_arch of FP_Add_Array is 
+architecture FP_Add_Array_parallel_arch of FP_Add_Array is 
 
---     signal s_mid_results : QFormat_Array(INPUT_SIZE - 2 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+    signal s_mid_results : QFormat_Array(INPUT_SIZE - 2 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
 
---     component FP_Add_Layer is
---         generic (
---             INTEGER_PART    : integer := 8;
---             FRACTIONAL_PART : integer := 8;
---             INPUT_SIZE      : integer := 16
---         );
---         port (
---             i_clk   : in  std_logic;
---             i_rstn  : in  std_logic;
+    component FP_Add_Layer is
+        generic (
+            INTEGER_PART    : integer := 8;
+            FRACTIONAL_PART : integer := 8;
+            INPUT_SIZE      : integer := 16
+        );
+        port (
+            i_clk   : in  std_logic;
+            i_rstn  : in  std_logic;
 
---             i_a     : in  QFormat_Array(INPUT_SIZE - 1 downto 0)
---                             ((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
---             o_y     : out QFormat_Array((INPUT_SIZE / 2) - 1 downto 0)
---                             ((INTEGER_PART + FRACTIONAL_PART - 1) downto 0)
---         );
---     end component FP_Add_Layer;
+            i_a     : in  QFormat_Array(INPUT_SIZE - 1 downto 0)
+                            ((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
+            o_y     : out QFormat_Array((INPUT_SIZE / 2) - 1 downto 0)
+                            ((INTEGER_PART + FRACTIONAL_PART - 1) downto 0)
+        );
+    end component FP_Add_Layer;
 
--- begin
+begin
     
---     ARRAY_GEN: for i in integer(floor(log2(real(INPUT_SIZE)))) downto 1 generate
+    ARRAY_GEN: for i in integer(floor(log2(real(INPUT_SIZE)))) downto 1 generate
         
---         INPUT_LAYER: if (i = integer(floor(log2(real(INPUT_SIZE))))) generate 
---             INPUT_LAYER_INSTANCE: FP_Add_Layer
---             generic map(
---                 INTEGER_PART => INTEGER_PART,
---                 FRACTIONAL_PART => FRACTIONAL_PART,
---                 INPUT_SIZE => 2**i
---             )
---             port map(
---                 i_clk => i_clk,
---                 i_rstn => i_rstn,
---                 i_a => i_a,
---                 o_y => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) )
---             );
---         end generate INPUT_LAYER;
+        INPUT_LAYER: if (i = integer(floor(log2(real(INPUT_SIZE))))) generate 
+            INPUT_LAYER_INSTANCE: FP_Add_Layer
+            generic map(
+                INTEGER_PART => INTEGER_PART,
+                FRACTIONAL_PART => FRACTIONAL_PART,
+                INPUT_SIZE => 2**i
+            )
+            port map(
+                i_clk => i_clk,
+                i_rstn => i_rstn,
+                i_a => i_a,
+                o_y => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) )
+            );
+        end generate INPUT_LAYER;
 
---         MIDDLE_LAYERS: if (i /= integer(floor(log2(real(INPUT_SIZE))))) generate
---             MIDDLE_LAYER_INSTANCE: FP_Add_Layer
---             generic map(
---                 INTEGER_PART => INTEGER_PART,
---                 FRACTIONAL_PART => FRACTIONAL_PART,
---                 INPUT_SIZE => 2**i
---             )
---             port map(
---                 i_clk => i_clk,
---                 i_rstn => i_rstn,
---                 i_a => s_mid_results( (2**(i+1) - 2) downto (2**(i+1) - 2**i - 1) ),
---                 o_y => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) )
---             );
---         end generate MIDDLE_LAYERS;
+        MIDDLE_LAYERS: if (i /= integer(floor(log2(real(INPUT_SIZE))))) generate
+            MIDDLE_LAYER_INSTANCE: FP_Add_Layer
+            generic map(
+                INTEGER_PART => INTEGER_PART,
+                FRACTIONAL_PART => FRACTIONAL_PART,
+                INPUT_SIZE => 2**i
+            )
+            port map(
+                i_clk => i_clk,
+                i_rstn => i_rstn,
+                i_a => s_mid_results( (2**(i+1) - 2) downto (2**(i+1) - 2**i - 1) ),
+                o_y => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) )
+            );
+        end generate MIDDLE_LAYERS;
         
---      end generate ARRAY_GEN;
+     end generate ARRAY_GEN;
 
---     o_y <= s_mid_results(0);
+    o_y <= s_mid_results(0);
 
--- end architecture FP_Add_Array_pararell_arch;
+end architecture FP_Add_Array_parallel_arch;

@@ -18,10 +18,12 @@ TOPLEVEL_LANG ?= vhdl
 
 # Add VHDL sources
 # Add more sources by replicating the following lines. BE AWARE OF COMPILE ORDER!
+
 VHDL_SOURCES += $(PWD)/../../RTL/Types.vhdl
 VHDL_SOURCES += $(PWD)/../../RTL/FP_Add.vhdl
 VHDL_SOURCES += $(PWD)/../../RTL/FP_Add_Layer.vhdl
 VHDL_SOURCES += $(PWD)/../../RTL/FP_Add_Array.vhdl
+VHDL_SOURCES += $(PWD)/../../wrappers/FP_Add_Array_serial_wrap.vhdl
 
 
 # Add verilog sources
@@ -30,7 +32,7 @@ VHDL_SOURCES += $(PWD)/../../RTL/FP_Add_Array.vhdl
 #VERILOG_SOURCES += $(PWD)/../../RTL/FP_Add_Layer.v
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
-TOPLEVEL = fp_add_array
+TOPLEVEL = FP_Add_Array_serial_wrap
 
 # MODULE is the basename of the Python test file
 # Corresponds the filename of the python file
