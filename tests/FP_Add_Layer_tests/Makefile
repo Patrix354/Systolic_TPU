@@ -1,5 +1,6 @@
 # Simulator to be used.
 SIM ?= nvc
+SIM_ARGS += --std=2008
 #EXTRA_ARGS += 
 
 # Additional simulator args
@@ -10,7 +11,8 @@ SIM_ARGS += -gINPUT_SIZE=16
 
 # VCD file output (Fully optional)
 #VCD_NAME ?= fp_add_layer_tests.vcd
-#SIM_ARGS += --vcd=$(VCD_NAME)
+SIM_ARGS += --format=vcd
+SIM_ARGS += --wave=$(VCD_NAME)
 
 # Simulator language
 TOPLEVEL_LANG ?= vhdl

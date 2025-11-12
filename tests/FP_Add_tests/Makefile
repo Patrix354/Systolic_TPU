@@ -1,17 +1,31 @@
 # Simulator to be used.
-VCD_NAME ?= fp_mul_tests.vcd
-SIM ?= ghdl
+SIM ?= nvc
+SIM_ARGS += --std=2008
 #EXTRA_ARGS += 
-SIM_ARGS += --vcd=$(VCD_NAME)
+
+# Additional simulator args
+# Design parameters
 SIM_ARGS += -gINTEGER_PART=4
 SIM_ARGS += -gFRACTIONAL_PART=4
 
+# VCD file output (Fully optional)
+#VCD_NAME ?= fp_add_layer_tests.vcd
+SIM_ARGS += --format=vcd
+SIM_ARGS += --wave=$(VCD_NAME)
+
+# Simulator language
 TOPLEVEL_LANG ?= vhdl
 
 # Add VHDL sources
-# Add more sources by replicating the following lines.
-VHDL_SOURCES += $(PWD)/../../RTL/FP_Add.vhdl
+# Add more sources by replicating the following lines. BE AWARE OF COMPILE ORDER!
 VHDL_SOURCES += $(PWD)/../../RTL/Types.vhdl
+VHDL_SOURCES += $(PWD)/../../RTL/FP_Add.vhdl
+
+# Add verilog sources
+# Add more sources by replicating the following lines. BE AWARE OF COMPILE ORDER!
+#VERILOG_SOURCES += $(PWD)/../../RTL/FP_Add.v
+#VERILOG_SOURCES += $(PWD)/../../RTL/FP_Add_Layer.v
+
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
 TOPLEVEL = fp_add
 
