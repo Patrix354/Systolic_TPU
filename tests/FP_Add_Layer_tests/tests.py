@@ -103,26 +103,7 @@ async def randomised_test(dut):
             assert dut.o_y[i].value == int_y[i]
 
         await RisingEdge(dut.i_clk)
-    pass
-#         a = FixedPoint(rand_a, m=M_bits, n=N_bits, signed=True)
-#         b = FixedPoint(rand_b, m=M_bits, n=N_bits, signed=True)
-#         c = fp_op.fixed_add(a, b)
-
-#         iA = fp_op.fixed_to_int(a)
-#         iB = fp_op.fixed_to_int(b)
-#         iC = fp_op.fixed_to_int(c)
-
-#         dut.i_a.value = iA
-#         dut.i_b.value = iB
-
-#         for j in range(0,2):
-#             await RisingEdge(dut.i_clk)
-
-#         assert dut.o_y.value == iC, (
-#             f'''Addition isn't correct. a = {float(a)}, b = {float(b)},
-#              c = {float(c)}. Iteration {i}"'''
-#         )
-
+    pass    
 
 @cocotb.test()
 async def dummy_test(dut):
