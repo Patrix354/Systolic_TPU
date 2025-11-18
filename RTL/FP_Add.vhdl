@@ -50,15 +50,18 @@ entity FP_Add is
 end entity;
 
 architecture FP_Add_arch of FP_Add is 
+    signal s_y  : QFormat(INTEGER_PART + FRACTIONAL_PART downto 0);
 begin
     
+    o_y <= s_y(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+
     process(i_clk)
     begin
         if rising_edge(i_clk) then
             if i_rstn = '0' then
-                o_y <= (others => '0');
+                s_y <= (others => '0');
             else
-                o_y <= i_a + i_b;
+                s_y <= resize(i_a, INTEGER_PART + FRACTIONAL_PART + 1) + resize(i_b, INTEGER_PART + FRACTIONAL_PART + 1);
             end if;
         end if;
 

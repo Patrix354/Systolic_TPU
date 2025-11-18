@@ -61,7 +61,8 @@ begin
     s_en <= i_en when i_rstn = '1' else '0';
     s_zero <= i_zero when i_rstn = '1' else '0';
     o_data <= s_acc_data when i_rstn = '1' else (others => '0');
-
+    s_a <= s_ext_data when s_zero = '0' else (others => '0');
+    s_b <= s_acc_data when s_en = '1' else (others => '0');
 
     ACC_SUM_CELL: FP_Add
          generic map(
@@ -81,20 +82,12 @@ begin
             IN_INTEGER_PART    => IN_INTEGER_PART,
             IN_FRACTIONAL_PART => IN_FRACTIONAL_PART,
             OUT_INTEGER_PART    => OUT_INTEGER_PART,
-            OUT_FRACTIONAL_PART => OUT_INTEGER_PART
+            OUT_FRACTIONAL_PART => OUT_FRACTIONAL_PART
         )
         port map(
             i_data => i_data,
             o_data => s_ext_data
 
         );
-
-    ACC_PROC : process( i_clk )
-    begin
-        if rising_edge(i_clk) then
-            s_a <= s_ext_data when s_zero = '0' else (others => '0');
-            s_b <= s_acc_data when s_en = '1' else (others => '0');
-        end if;
-    end process;
 
 end architecture FP_Acc_arch;

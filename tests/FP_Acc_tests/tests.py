@@ -11,13 +11,26 @@ from fixedpoint import *
 import random
 
 period_ns = 10
-in_M_bits = 4
-in_N_bits = 4 
+in_M_bits = 8
+in_N_bits = 8 
 
 out_M_bits = 32
 out_N_bits = 32
 
 Input_size = 16
+
+def cumsum_vect(input_vect):
+    ret_vect = [input_vect[0]]
+    for i in range(len(input_vect)):
+        if i == 0:
+            continue
+        ret_vect.append(ret_vect[-1] + input_vect[i])
+    return ret_vect
+
+def float_to_int_fixedpoint_vector(input_vector, M_bits, N_bits):
+    fixedpoint_input_vector = [FixedPoint(i, m=M_bits, n=N_bits, signed=True) for i in input_vector]
+    int_input_vector = [fp_op.fixed_to_int(i) for i in fixedpoint_input_vector]   # Final list to send
+    return int_input_vector
 
 @cocotb.test()
 async def non_random_entry_test(dut):
@@ -27,36 +40,31 @@ async def non_random_entry_test(dut):
     dut.i_zero.value = 0
     dut.i_data.value = 0
 
+    # 2 cycles for reset
     Clock(dut.i_clk, period_ns, unit='ns').start()
     for i in range(0, 2):
-        await RisingEdge(dut.i_clk)
+        await FallingEdge(dut.i_clk)
 
     dut.i_rstn.value = 1
-    await RisingEdge(dut.i_clk)
+    await FallingEdge(dut.i_clk)
 
     # Example inupt numbers
-    float_a = [1.5, 3, 2.5, 2, -2, -1, 5, -3.5, 2, -4, 1.25, 1, 2, -3, 1, 1]
-    fixedp_a = [FixedPoint(i, m=in_M_bits, n=in_N_bits, signed=True) for i in float_a]
-    int_a = [fp_op.fixed_to_int(i) for i in fixedp_a]   # Final list to send
+    input_vector = [1.5, 3, 2.5, 2, -2, -1, 5, -3.5, 2, -4, 1.25, 1, 2, -3, 1, 1]
+    int_input_vector = float_to_int_fixedpoint_vector(input_vector, in_M_bits, in_N_bits)
 
     # Expected output
-    float_y = [float_a[0]]
-    for i in range(len(float_a)):
-        if i == 0:
-            continue
-        float_y.append(float_y[-1] + float_a[i])
-
-    fixedp_y = [FixedPoint(i, m=out_M_bits, n=out_N_bits, signed=True) for i in float_y]
-    int_y = [fp_op.fixed_to_int(i) for i in fixedp_y]
+    output_vector = cumsum_vect(input_vector)
+    int_output_vector = float_to_int_fixedpoint_vector(output_vector, out_M_bits, out_N_bits)
     
     # Assign inputs
     dut.i_en.value = 1
-    for i in range(len(float_a)):
-        dut.i_data.value = int_a[i]
-        await RisingEdge(dut.i_clk)
+    for i in range(len(input_vector)):
+        dut.i_data.value = int_input_vector[i]
         await FallingEdge(dut.i_clk)
-        assert dut.o_data.value == int_y[i]
-        await RisingEdge(dut.i_clk)
+        
+        assert dut.o_data.value == int_output_vector[i], (
+            f"Error at iteration {i}, at value: {input_vector[i]}, expected output: {output_vector[i]}"
+        )
     pass
 
 # @cocotb.test()
@@ -86,11 +94,11 @@ async def non_random_entry_test(dut):
 #             in_a_long.append(resize(in_a_short[-1], in_M_bits, in_N_bits))
             
 #         # Expected output
-#         fixedp_y = FixedPoint(0, m=in_M_bits, n=in_N_bits, signed=True)
+#         cumsum_fixedpoint_output_vector = FixedPoint(0, m=in_M_bits, n=in_N_bits, signed=True)
 #         for i in in_a_long:
-#             fixedp_y = fp_op.fixed_add(fixedp_y, i)
-#             fixedp_y = resize(fixedp_y, in_M_bits, in_N_bits)
-#         int_y = fp_op.fixed_to_int(fixedp_y)
+#             cumsum_fixedpoint_output_vector = fp_op.fixed_add(cumsum_fixedpoint_output_vector, i)
+#             cumsum_fixedpoint_output_vector = resize(cumsum_fixedpoint_output_vector, in_M_bits, in_N_bits)
+#         cumsum_int_output_vector = fp_op.fixed_to_int(cumsum_fixedpoint_output_vector)
 
 #         # Assign inputs
 #         for i in range(len(dut.i_a)):
@@ -101,7 +109,7 @@ async def non_random_entry_test(dut):
 #             await RisingEdge(dut.i_clk)
 
 #         # Check output
-#         assert dut.o_y.value == int_y
+#         assert dut.o_y.value == cumsum_int_output_vector
 #     pass
 
 @cocotb.test()

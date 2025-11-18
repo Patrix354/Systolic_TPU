@@ -19,8 +19,7 @@ in_N_bits = 8
 
 Input_size = 16
 
-@cocotb.test()
-async def non_random_entry_test(dut):
+async def reset_seq(dut):
     dut.i_rstn.value = 0
     
     for child in dut.i_a:
@@ -32,6 +31,10 @@ async def non_random_entry_test(dut):
 
     dut.i_rstn.value = 1
     await RisingEdge(dut.i_clk)
+
+@cocotb.test()
+async def non_random_entry_test(dut):
+    await reset_seq(dut)
 
     # Example inupt numbers
     float_a = [1.5, 3, 2.5, 2, -2, -1, 5, -3.5, 2, -4, 1.25, 1, 2, -3, 1, 1]
@@ -62,17 +65,7 @@ async def non_random_entry_test(dut):
 
 @cocotb.test()
 async def randomised_test(dut):
-    dut.i_rstn.value = 0
-    
-    for child in dut.i_a:
-        child.value = 0
-
-    Clock(dut.i_clk, period_ns, unit='ns').start()
-    for i in range(0, 2):
-        await RisingEdge(dut.i_clk)
-
-    dut.i_rstn.value = 1
-    await RisingEdge(dut.i_clk)
+    await reset_seq(dut)
 
     for i in range(0, 100):
         in_a_long = []
