@@ -55,8 +55,7 @@ begin
     
     o_y <= s_y(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
 
-    process(i_clk)
-    begin
+    process(i_clk) begin
         if rising_edge(i_clk) then
             if i_rstn = '0' then
                 s_y <= (others => '0');
