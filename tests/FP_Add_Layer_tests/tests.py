@@ -19,8 +19,7 @@ in_N_bits = 8
 
 Input_size = 16
 
-@cocotb.test()
-async def non_random_entry_test(dut):
+async def reset_seq(dut):
     dut.i_rstn.value = 0
     
     for child in dut.i_a:
@@ -32,6 +31,10 @@ async def non_random_entry_test(dut):
 
     dut.i_rstn.value = 1
     await RisingEdge(dut.i_clk)
+
+@cocotb.test()
+async def non_random_entry_test(dut):
+    await reset_seq(dut)
 
     # Example inupt numbers
     float_a = [1.5, 3, 2.5, 2, -2, -1, 5, -3.5, 2, -4, 1.25, 1, 2, -3, 1, 1]
@@ -62,17 +65,7 @@ async def non_random_entry_test(dut):
 
 @cocotb.test()
 async def randomised_test(dut):
-    dut.i_rstn.value = 0
-    
-    for child in dut.i_a:
-        child.value = 0
-
-    Clock(dut.i_clk, period_ns, unit='ns').start()
-    for i in range(0, 2):
-        await RisingEdge(dut.i_clk)
-
-    dut.i_rstn.value = 1
-    await RisingEdge(dut.i_clk)
+    await reset_seq(dut)
 
     for i in range(0, 100):
         in_a_long = []
@@ -103,26 +96,7 @@ async def randomised_test(dut):
             assert dut.o_y[i].value == int_y[i]
 
         await RisingEdge(dut.i_clk)
-    pass
-#         a = FixedPoint(rand_a, m=M_bits, n=N_bits, signed=True)
-#         b = FixedPoint(rand_b, m=M_bits, n=N_bits, signed=True)
-#         c = fp_op.fixed_add(a, b)
-
-#         iA = fp_op.fixed_to_int(a)
-#         iB = fp_op.fixed_to_int(b)
-#         iC = fp_op.fixed_to_int(c)
-
-#         dut.i_a.value = iA
-#         dut.i_b.value = iB
-
-#         for j in range(0,2):
-#             await RisingEdge(dut.i_clk)
-
-#         assert dut.o_y.value == iC, (
-#             f'''Addition isn't correct. a = {float(a)}, b = {float(b)},
-#              c = {float(c)}. Iteration {i}"'''
-#         )
-
+    pass    
 
 @cocotb.test()
 async def dummy_test(dut):

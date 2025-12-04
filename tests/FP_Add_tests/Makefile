@@ -1,6 +1,5 @@
 # Simulator to be used.
 SIM ?= nvc
-SIM_ARGS += --std=2008
 #EXTRA_ARGS += 
 
 # Additional simulator args
@@ -9,7 +8,7 @@ SIM_ARGS += -gINTEGER_PART=4
 SIM_ARGS += -gFRACTIONAL_PART=4
 
 # VCD file output (Fully optional)
-#VCD_NAME ?= fp_add_layer_tests.vcd
+VCD_NAME ?= fp_add.vcd
 SIM_ARGS += --format=vcd
 SIM_ARGS += --wave=$(VCD_NAME)
 

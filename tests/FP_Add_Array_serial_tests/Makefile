@@ -9,7 +9,7 @@ SIM_ARGS += -gFRACTIONAL_PART=8
 SIM_ARGS += -gINPUT_SIZE=16
 
 # VCD file output (Fully optional)
-#VCD_NAME ?= fp_add_layer_tests.vcd
+VCD_NAME ?= fp_add_array_serial_tests.vcd
 SIM_ARGS += --format=vcd
 SIM_ARGS += --wave=$(VCD_NAME)
 
