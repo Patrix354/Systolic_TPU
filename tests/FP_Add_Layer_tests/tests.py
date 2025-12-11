@@ -22,7 +22,7 @@ Input_size = 16
 async def reset_seq(dut):
     dut.i_rstn.value = 0
     
-    for child in dut.i_a:
+    for child in dut.i_data:
         child.value = 0
 
     Clock(dut.i_clk, period_ns, unit='ns').start()
@@ -50,15 +50,18 @@ async def non_random_entry_test(dut):
     int_y = [fp_op.fixed_to_int(i) for i in fixedp_y]   # Expected list
 
     # Assign inputs
-    for i in range(len(dut.i_a)):
-        dut.i_a[i].value = int_a[i]
+    for i in range(len(dut.i_data)):
+        dut.i_data[i].value = int_a[i]
+    dut.i_valid.value = 1;
+    await RisingEdge(dut.i_clk)
+    dut.i_valid.value = 0;
 
     for i in range(2):
         await RisingEdge(dut.i_clk)
 
     # Check output
-    for i in range(len(dut.o_y)):
-        assert dut.o_y[i].value == int_y[i]
+    for i in range(len(dut.o_data)):
+        assert dut.o_data[i].value == int_y[i]
 
     await RisingEdge(dut.i_clk)
     pass
@@ -85,15 +88,19 @@ async def randomised_test(dut):
         int_y = [fp_op.fixed_to_int(i) for i in fixedp_y]   # Expected list
 
         # Assign inputs
-        for i in range(len(dut.i_a)):
-            dut.i_a[i].value = fp_op.fixed_to_int(in_a_long[i])
+        for i in range(len(dut.i_data)):
+            dut.i_data[i].value = fp_op.fixed_to_int(in_a_long[i])
+        dut.i_valid.value = 1;
+        await RisingEdge(dut.i_clk)
+        dut.i_valid.value = 0;
+
 
         for i in range(2):
             await RisingEdge(dut.i_clk)
 
         # Check output
-        for i in range(len(dut.o_y)):
-            assert dut.o_y[i].value == int_y[i]
+        for i in range(len(dut.o_data)):
+            assert dut.o_data[i].value == int_y[i]
 
         await RisingEdge(dut.i_clk)
     pass    

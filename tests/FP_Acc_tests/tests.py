@@ -36,7 +36,7 @@ def float_to_int_fixedpoint_vector(input_vector, M_bits, N_bits):
 async def non_random_entry_test(dut):
     # Reset procedure
     dut.i_rstn.value = 0
-    dut.i_en.value = 0
+    dut.i_valid.value = 0
     dut.i_zero.value = 0
     dut.i_data.value = 0
 
@@ -57,10 +57,10 @@ async def non_random_entry_test(dut):
     int_output_vector = float_to_int_fixedpoint_vector(output_vector, out_M_bits, out_N_bits)
     
     # Assign inputs
-    dut.i_en.value = 1
+    dut.i_valid.value = 1
     for i in range(len(input_vector)):
         dut.i_data.value = int_input_vector[i]
-        await FallingEdge(dut.i_clk)
+        await FallingEdge(dut.o_ready)
         
         assert dut.o_data.value == int_output_vector[i], (
             f"Error at iteration {i}, at value: {input_vector[i]}, expected output: {output_vector[i]}"

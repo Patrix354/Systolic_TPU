@@ -42,7 +42,7 @@ entity Activation_Function is
     );
     port (
         i_clk       : in  std_logic;
-        i_rst       : in  std_logic;
+        i_rstn       : in  std_logic;
         i_data   : in  signed(DATA_WIDTH - 1 downto 0);
         i_valid  : in  std_logic;
         o_data  : out signed(DATA_WIDTH - 1 downto 0)

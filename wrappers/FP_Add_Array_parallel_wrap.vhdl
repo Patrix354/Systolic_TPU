@@ -12,9 +12,10 @@ entity FP_Add_Array_parallel_wrap is
     port (
         i_clk   : in std_logic;
         i_rstn  : in std_logic;
-
-        i_a     : in  QFormat_Array(INPUT_SIZE-1 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
-        o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0)
+        i_valid : in std_logic;
+        i_data     : in  QFormat_Array(INPUT_SIZE-1 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        o_data     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        o_ready : out std_logic
     );
 end entity FP_Add_Array_parallel_wrap;
 
@@ -30,8 +31,10 @@ begin
         port map (
             i_clk  => i_clk,
             i_rstn => i_rstn,
-            i_a    => i_a,
-            o_y    => o_y
+            i_valid => i_valid,
+            i_data    => i_data,
+            o_data    => o_data,
+            o_ready => o_ready
         );
 
 end architecture wrapper;

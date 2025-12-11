@@ -24,6 +24,7 @@ async def non_random_entry_test(dut):
         await RisingEdge(dut.i_clk)
 
     dut.i_rstn.value = 1
+    dut.i_valid.value = 0
 
     await RisingEdge(dut.i_clk)
 
@@ -38,13 +39,18 @@ async def non_random_entry_test(dut):
     dut.i_a.value = iA
     dut.i_b.value = iB
 
-    for i in range(0,2):
-        await RisingEdge(dut.i_clk)
+    dut.i_valid.value = 1
+    await RisingEdge(dut.i_clk)
+    dut.i_valid.value = 0
+    await RisingEdge(dut.i_clk)
+    await RisingEdge(dut.i_clk)
 
     assert dut.o_y.value == iC, (
         f"Multiplication isn't correct. a = {float(a)}, b = {float(b)}, c = {float(c)}"
     )
 
+
+    await RisingEdge(dut.i_clk)
     await RisingEdge(dut.i_clk)
     pass
 
@@ -76,14 +82,18 @@ async def randomised_test(dut):
 
         dut.i_a.value = iA
         dut.i_b.value = iB
-
-        for j in range(0,2):
-            await RisingEdge(dut.i_clk)
+        dut.i_valid.value = 1
+        await RisingEdge(dut.i_clk)
+        dut.i_valid.value = 0
+        await RisingEdge(dut.i_clk)
+        await RisingEdge(dut.i_clk)
 
         assert dut.o_y.value == iC, (
             f'''Multiplication isn't correct. a = {float(a)}, b = {float(b)},
              c = {float(c)}. Iteration {i}"'''
         )
+        await RisingEdge(dut.i_clk)
+        await RisingEdge(dut.i_clk)
     pass
 
 @cocotb.test()
