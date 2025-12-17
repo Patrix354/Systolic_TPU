@@ -35,8 +35,8 @@ architecture MAC_Core_arch of MAC_Core is
     constant C_ADD_ARRAY_OUTPUT_FRACTIONAL_PART : integer := C_MUL_OUTPUT_FRACTIONAL_PART;
 
     -- Bit length of accumulation stage output
-    constant C_ACC_INTEGER_PART : integer := 32;
-    constant C_ACC_FRACTIONAL_PART : integer := 32;
+    constant C_ACC_INTEGER_PART : integer := OUT_INTEGER_PART;
+    constant C_ACC_FRACTIONAL_PART : integer := OUT_FRACTIONAL_PART;
     constant C_ACC_OUTPUT_LEN : integer := C_ACC_INTEGER_PART + C_ACC_FRACTIONAL_PART;
 
     -- Necessary componenet declarations
@@ -130,6 +130,7 @@ architecture MAC_Core_arch of MAC_Core is
     signal s_FP_Add_array_output : QFormat(C_ADD_ARRAY_OUTPUT_LEN-1 downto 0);
     signal s_FP_Acc_output : QFormat(C_ACC_OUTPUT_LEN-1 downto 0);
     signal s_Activation_output : QFormat(C_ACC_OUTPUT_LEN-1 downto 0);
+    signal s_out_data : QFormat(C_ACC_OUTPUT_LEN-1 downto 0);
 begin
     
     -- First layer
@@ -227,16 +228,20 @@ begin
                 s_data <= (others => '0');
                 s_start_dly <= '0';
                 s_busy <= '0';
+                s_out_data <= (others => '0');
             else
                 if i_start = '1' and s_start_dly = '0' then
                     s_data <= i_data;
                     s_propagating_en(0) <= '1';
                     s_busy <= '1';
+                    s_out_data <= s_out_data;
                 else
                     if s_busy = '1' and s_done = '1' then
                         s_busy <= '0';
+                        s_out_data <= s_activation_output;
                     else
                         s_busy <= s_busy;
+                        s_out_data <= s_out_data;
                     end if ;
                     s_data <= s_data;
                     s_propagating_en(0) <= '0';
@@ -247,6 +252,7 @@ begin
         end if;
     end process;
 
+    o_data <= s_out_data;
     o_busy <= s_busy;
 
 end architecture;

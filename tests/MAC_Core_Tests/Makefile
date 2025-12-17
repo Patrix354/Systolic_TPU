@@ -4,8 +4,11 @@ SIM ?= nvc
 
 # Additional simulator args
 # Design parameters
-SIM_ARGS += -gINTEGER_PART=8
-SIM_ARGS += -gFRACTIONAL_PART=8
+SIM_ARGS += -gINUPT_PAIRS_NUMBER=2
+SIM_ARGS += -gIN_INTEGER_PART=4
+SIM_ARGS += -gIN_FRACTIONAL_PART=4
+SIM_ARGS += -gOUT_INTEGER_PART=16
+SIM_ARGS += -gOUT_FRACTIONAL_PART=16
 
 # VCD file output (Fully optional)
 VCD_NAME ?= mac_core.vcd
@@ -25,7 +28,7 @@ VHDL_SOURCES += $(PWD)/../../RTL/FP_Add_Array.vhdl
 VHDL_SOURCES += $(PWD)/../../RTL/FP_Extender.vhdl
 VHDL_SOURCES += $(PWD)/../../RTL/FP_Extender_array.vhdl
 VHDL_SOURCES += $(PWD)/../../RTL/FP_Acc.vhdl
-VHDL_SOURCES += $(PWD)/../../RTL/FP_Activation_Function.vhdl
+VHDL_SOURCES += $(PWD)/../../RTL/Activation_Function.vhdl
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
 TOPLEVEL = mac_core

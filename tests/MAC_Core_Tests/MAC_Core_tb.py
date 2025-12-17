@@ -30,15 +30,16 @@ class MAC_Core_monitor:
         self._task = cocotb.start_soon(self._run())
 
     async def _run(self):
-        # await RisingEdge(self._rstn)
+        await RisingEdge(self._rstn)
 
-        # while True:
-        #     if self._ready.value == 1:
-        #         await self._outQueue.put(self._y.value)
-        #     await self.wait(1)
+        while True:
+            await RisingEdge(self._busy)
+             if self._busy.value == 1:
+                 await self._outQueue.put(self._data.value)
+             await self.wait(1)
 
 class MAC_Core_driver:
-    def __init__(self, dut, clk, rstn, valid, a, b, period):
+    def __init__(self, dut, clk, rstn, valid, zero, data, period):
         self._dut = dut
         self._clk = clk
         self._rstn = rstn
@@ -57,18 +58,21 @@ class MAC_Core_driver:
             await RisingEdge(self._clk)
 
     async def _reset(self):
-        # self._rstn.value = 0
-        # self._a.value = 0
-        # self._b.value = 0
-        # self._valid.value = 0
-        
-        # self.start_clock()
-        # await self.wait(1)        
-        # self._rstn.value = 1
-        # await self.wait(2)
+        self._rstn.value = 0
+        for i in self._data:
+            i.value = 0
+        self._valid.value = 0
+        self._zero.value = 0
 
-    async def send(self, a, b):
-        # await self._inQueue.put([a, b])
+        self.start_clock()
+        await self.wait(1)        
+        self._rstn.value = 1
+        await self.wait(2)
+
+    async def send(self, input_list):
+        if len(input_list) != len(self._data):
+            raise IndexError("input list has to be the same length as input size")
+        await self._inQueue.put(input_list)
 
     def start(self):
         if self._task is not None:
@@ -76,23 +80,23 @@ class MAC_Core_driver:
         self._task = cocotb.start_soon(self._run())
 
     async def _run(self):
-        # await self._reset()
+        await self._reset()
 
-        # while True:
-        #     if self._inQueue.empty() == False:
-        #         varData = await self._inQueue.get()
-        #         self._a.value = varData[0]
-        #         self._b.value = varData[1]
-        #         self._valid.value = 1
-        #         await self.wait(1)
-        #     else:
-        #         self._valid.value = 0
-        #         self._a.value = 0
-        #         self._b.value = 0
-        #         await self.wait(1)
+        while True:
+            if self._inQueue.empty() == False:
+                varData = await self._inQueue.get()
+                for i in len(self._data):
+                    self._data[i].value = varData[i]
+                self._valid.value = 1
+                await self.wait(1)
+            else:
+                self._valid.value = 0
+                for i in self._data:
+                    i.value = 0
+                await self.wait(1)
 
 
-class FP_Mul_Scoreboard:
+class MAC_Core_Scoreboard:
     def __init__(self, idealCaseQueue, monitorQueue):
         self._idealCaseQueue = idealCaseQueue
         self._monitorQueue = monitorQueue
@@ -111,35 +115,35 @@ class FP_Mul_Scoreboard:
         return errors
 
 
-class FP_Mul_tb:
+class MAC_Core_tb:
     def __init__(self, dut, idealCaseQueue):
         self._dut = dut
         self._monitorQueue = asyncio.Queue()
         self._idealCaseQueue = idealCaseQueue
 
-        # self.driver = FP_Mul_driver(
-        #     dut = self._dut, 
-        #     clk = self._dut.i_clk,
-        #     rstn = self._dut.i_rstn,
-        #     valid = self._dut.i_valid,
-        #     a=self._dut.i_a,
-        #     b=self._dut.i_b,
-        #     period=10
-        #     )
+        self.driver = MAC_Core_driver(
+            dut = self._dut, 
+            clk = self._dut.i_clk,
+            rstn = self._dut.i_rstn,
+            valid = self._dut.i_valid,
+            zero = self._dut.i_zero,
+            data=self._dut.i_data,
+            period=10
+            )
 
-        # self.monitor = FP_Mul_monitor(
-        #     dut = self._dut,
-        #     clk = self._dut.i_clk,
-        #     rstn = self._dut.i_rstn,
-        #     ready = self._dut.o_ready,
-        #     y = self._dut.o_y,
-        #     outQueue=self._monitorQueue
-        #     )
+        self.monitor = MAC_Core_monitor(
+            dut = self._dut,
+            clk = self._dut.i_clk,
+            rstn = self._dut.i_rstn,
+            busy=self._dut.o_busy,
+            data = self._dut.o_data,
+            outQueue=self._monitorQueue
+            )
         
-        # self.scoreboard = FP_Mul_Scoreboard(
-        #     idealCaseQueue=self._idealCaseQueue,
-        #     monitorQueue=self._monitorQueue
-        # )
+        self.scoreboard = MAC_Core_Scoreboard(
+            idealCaseQueue=self._idealCaseQueue,
+            monitorQueue=self._monitorQueue
+        )
 
     def start(self):
         self.driver.start()

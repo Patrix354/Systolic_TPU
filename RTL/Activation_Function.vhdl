@@ -51,7 +51,7 @@ entity Activation_Function is
 end entity Activation_Function;
 
 architecture ReLU of Activation_Function is
-    signal s_data  : std_logic_vector(DATA_WIDTH - 1 downto 0);
+    signal s_data  : signed(DATA_WIDTH - 1 downto 0);
 begin
     process(i_clk) begin
         if rising_edge(i_clk) then
@@ -59,7 +59,7 @@ begin
                 s_data <= (others => '0');
                 o_ready <= '0';
             else
-                if i_valid = 1 then
+                if i_valid = '1' then
                     if i_data(DATA_WIDTH - 1) = '1' then
                         s_data <= (others => '0');
                         o_ready <= '1';
