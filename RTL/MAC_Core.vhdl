@@ -100,7 +100,7 @@ architecture MAC_Core_arch of MAC_Core is
     port (
         i_clk  : in std_logic;
         i_rstn  : in std_logic;
-        i_en   : in std_logic;
+        i_valid : in std_logic;
         i_zero : in std_logic;
         i_data : in QFormat((IN_INTEGER_PART+IN_FRACTIONAL_PART-1) downto 0);
         o_ready     : out std_logic;
@@ -122,7 +122,6 @@ architecture MAC_Core_arch of MAC_Core is
     );
     end component Activation_Function;
 
-    signal s_start_dly : std_logic;
     signal s_busy : std_logic;
     signal s_done : std_logic;
     signal s_propagating_valid : std_logic_vector(4 downto 0);
@@ -202,7 +201,7 @@ begin
     port map(
         i_clk  => i_clk,
         i_rstn => i_rstn,
-        i_en   => s_propagating_valid(3),
+        i_valid => s_propagating_valid(3),
         i_zero => i_zero,
         i_data => s_FP_Add_array_output,
         o_ready => s_propagating_valid(4),
@@ -227,14 +226,15 @@ begin
         process(i_clk) begin
         if rising_edge(i_clk) then
             if i_rstn = '0' then
-                s_data <= (others => '0');
-                s_start_dly <= '0';
+                for i in (2*INPUT_PAIRS_NUMBER)-1 downto 0 loop
+                    s_in_data(i) <= (others => '0');
+                end loop;
                 s_busy <= '0';
                 s_out_data <= (others => '0');
             else
                 if i_valid = '1' then
                     s_in_data <= i_data;
-                    s_propagating_en(0) <= '1';
+                    s_propagating_valid(0) <= '1';
                     s_busy <= '1';
                     s_out_data <= s_out_data;
                 else
@@ -246,10 +246,9 @@ begin
                         s_out_data <= s_out_data;
                     end if ;
                     s_in_data <= s_in_data;
-                    s_propagating_en(0) <= '0';
+                    s_propagating_valid(0) <= '0';
                 end if;
 
-                s_start_dly <= i_start;
             end if;
         end if;
     end process;
