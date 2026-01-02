@@ -17,15 +17,14 @@
 -- Ports:
 --   i_clk  : Clock input; triggers addition on rising edge.
 --   i_rstn : Active-low reset; clears outputs.
---   i_a    : Input array of Q-format numbers to be summed pairwise.
---   o_y    : Output array containing results of pairwise additions.
+--   i_data : Input array of Q-format numbers to be summed pairwise.
+--   i_valid : Data valid signal; enables computation when high.
+--   o_data : Output array containing results of pairwise additions.
+--   o_ready: Ready signal output
 --
 -- Notes:
 --   - The output array has a size equal to INPUT_SIZE / 2.
 --   - The QFormat_Array type is defined in the package 'Types' as 'array (natural range <>) of signed;'
---
--- Revision history:
---   11-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -43,9 +42,10 @@ entity FP_Add_Layer is
     port (
         i_clk   : in std_logic;
         i_rstn   : in std_logic;
-
-        i_a     : in QFormat_Array(INPUT_SIZE - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
-        o_y     : out QFormat_Array((INPUT_SIZE / 2) - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0)
+        i_valid  : in std_logic;
+        i_data     : in QFormat_Array(INPUT_SIZE - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
+        o_data     : out QFormat_Array((INPUT_SIZE / 2) - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
+        o_ready : out std_logic
     );
 end entity FP_Add_Layer;
 
@@ -59,11 +59,15 @@ architecture FP_Add_Layer_arch of FP_Add_Layer is
     port (
         i_clk   : in std_logic;
         i_rstn   : in std_logic;
+        i_valid  : std_logic;
         i_a     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
         i_b     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
-        o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0)
+        o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        o_ready : out std_logic
     );
     end component FP_Add;
+
+    signal s_ready : std_logic_vector((INPUT_SIZE/2)-1 downto 0);
 
 begin
      LAYER_GEN: for i in 0 to (INPUT_SIZE/2)-1 generate
@@ -75,10 +79,14 @@ begin
          port map(
              i_clk => i_clk,
              i_rstn => i_rstn,
-             i_a => i_a(2*i),
-             i_b => i_a((2*i)+1),
-             o_y => o_y(i)
+             i_valid => i_valid,
+             i_a => i_data(2*i),
+             i_b => i_data((2*i)+1),
+             o_y => o_data(i),
+             o_ready => s_ready(i)
          );
      end generate LAYER_GEN;
+
+    o_ready <= s_ready(0);
 
 end architecture FP_Add_Layer_arch;

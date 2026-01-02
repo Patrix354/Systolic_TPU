@@ -1,13 +1,12 @@
 import cocotb
-from cocotb.triggers import RisingEdge, FallingEdge, ClockCycles, Timer
-from cocotb.types import Array, LogicArray, Range
+from cocotb.triggers import RisingEdge, ClockCycles, Timer
 from cocotb.clock import Clock
+import asyncio
 
 # Fixed point operations
 import fp_op
-from fixedpoint import *
-
-# Random generator
+import fixedpoint
+from FP_Acc_tb import FP_Acc_tb
 import random
 
 period_ns = 10
@@ -28,25 +27,22 @@ def cumsum_vect(input_vect):
     return ret_vect
 
 def float_to_int_fixedpoint_vector(input_vector, M_bits, N_bits):
-    fixedpoint_input_vector = [FixedPoint(i, m=M_bits, n=N_bits, signed=True) for i in input_vector]
+    fixedpoint_input_vector = [fixedpoint.FixedPoint(i, m=M_bits, n=N_bits, signed=True) for i in input_vector]
     int_input_vector = [fp_op.fixed_to_int(i) for i in fixedpoint_input_vector]   # Final list to send
     return int_input_vector
 
+async def chect_output(dut, output_vector, int_output_vector, input_vector):
+    await RisingEdge(dut.o_ready)
+    for i in range(len(input_vector)):
+        await RisingEdge(dut.i_clk)
+        assert dut.o_data.value == int_output_vector[i], (
+        f"Error at iteration {i}, at value: {input_vector[i]}, expected output: {output_vector[i]}"
+    )
+
 @cocotb.test()
 async def non_random_entry_test(dut):
-    # Reset procedure
-    dut.i_rstn.value = 0
-    dut.i_en.value = 0
-    dut.i_zero.value = 0
-    dut.i_data.value = 0
-
-    # 2 cycles for reset
-    Clock(dut.i_clk, period_ns, unit='ns').start()
-    for i in range(0, 2):
-        await FallingEdge(dut.i_clk)
-
-    dut.i_rstn.value = 1
-    await FallingEdge(dut.i_clk)
+    idealCaseQueue = asyncio.Queue()
+    tb = FP_Acc_tb(dut, idealCaseQueue)
 
     # Example inupt numbers
     input_vector = [1.5, 3, 2.5, 2, -2, -1, 5, -3.5, 2, -4, 1.25, 1, 2, -3, 1, 1]
@@ -56,15 +52,16 @@ async def non_random_entry_test(dut):
     output_vector = cumsum_vect(input_vector)
     int_output_vector = float_to_int_fixedpoint_vector(output_vector, out_M_bits, out_N_bits)
     
-    # Assign inputs
-    dut.i_en.value = 1
-    for i in range(len(input_vector)):
-        dut.i_data.value = int_input_vector[i]
-        await FallingEdge(dut.i_clk)
+    for i in int_output_vector:
+        await idealCaseQueue.put(i)
+
+    for i in int_input_vector:
+        await tb.driver.send(i)
         
-        assert dut.o_data.value == int_output_vector[i], (
-            f"Error at iteration {i}, at value: {input_vector[i]}, expected output: {output_vector[i]}"
-        )
+    tb.start()
+    await tb.driver.wait(1000)
+    assert await tb.scoreboard.verify() == 0
+
     pass
 
 # @cocotb.test()

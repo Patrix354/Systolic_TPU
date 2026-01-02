@@ -19,8 +19,10 @@
 --   i_rstn: Active-low reset; clears the output register.
 --   i_a   : First input operand in QFormat(INTEGER_PART+FRACTIONAL_PART).
 --   i_b   : Second input operand in QFormat(INTEGER_PART+FRACTIONAL_PART).
+--   i_valid : Data valid signal; enables computation when high.
 --   o_y   : Output product in extended Q-format with doubled bit width:
 --           QFormat(2*(INTEGER_PART+FRACTIONAL_PART)).
+--   o_ready : Ready signal output.
 --
 -- Notes:
 --   - The QFormat type is defined as a subtype of 'signed'.
@@ -28,9 +30,6 @@
 --   - No rounding or saturation is applied to the output.
 --   - The result is purely registered and updated every clock cycle when
 --     reset is deasserted.
---
--- Revision history:
---   30-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -46,24 +45,51 @@ entity FP_Mul is
     port (
         i_clk   : in std_logic;
         i_rstn   : in std_logic;
-
+        i_valid     : in std_logic;
         i_a     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
         i_b     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
-
+        o_ready : out std_logic;
         o_y     : out QFormat( 2 * (INTEGER_PART + FRACTIONAL_PART) - 1 downto 0)
     );
 end entity;
 
-architecture FP_Mul_arch of FP_Mul is 
+architecture FP_Mul_arch of FP_Mul is
+    signal s_active : std_logic; 
+    signal s_a : QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+    signal s_b : QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+    signal s_y : QFormat( 2 * (INTEGER_PART + FRACTIONAL_PART) - 1 downto 0);
 begin
     
+    o_y <= s_y;
+
     process(i_clk)
     begin
         if rising_edge(i_clk) then
             if i_rstn = '0' then
-                o_y <= (others => '0');
+                s_y <= (others => '0');
+                o_ready <= '0';
+                s_a <= (others => '0');
+                s_b <= (others => '0');
+                s_active <= '0';
             else
-                o_y <= i_a * i_b;
+                if i_valid = '1' then
+                    s_a <= i_a;
+                    s_b <= i_b;
+                    s_active <= '1';
+                else
+                    s_a <= s_a;
+                    s_b <= s_b;
+                    s_active <= '0';
+                end if;
+
+                if s_active = '1' then
+                    s_y <= s_a * s_b;
+                    o_ready <= '1';
+                else
+                    s_y <= s_y;
+                    o_ready <= '0';
+                end if;
+
             end if;
         end if;
 

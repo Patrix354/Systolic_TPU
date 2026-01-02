@@ -44,7 +44,10 @@ async def test_two_numbers(dut, a_in, b_in):
     # Assigning values
     dut.i_a.value = iA
     dut.i_b.value = iB
-
+    dut.i_valid.value = 1;
+    await RisingEdge(dut.i_clk)
+    dut.i_valid.value = 0;
+    
     for i in range(0,2):
         await RisingEdge(dut.i_clk)
 

@@ -26,16 +26,15 @@
 -- Ports:
 --   i_clk  : Clock input; triggers synchronous additions.
 --   i_rstn : Active-low reset; clears internal registers.
---   i_a    : Input array of Q-format values.
---   o_y    : Single Q-format output representing the accumulated sum.
+--   i_valid : Data valid signal; enables computation when high.
+--   i_data : Input array of Q-format values.
+--   o_data : Single Q-format output representing the accumulated sum.
+--   o_ready: Ready signal output 
 --
 -- Notes:
 --   - Both architectures rely on FP_Add as the basic fixed-point adder block.
 --   - The parallel architecture assumes INPUT_SIZE is a power of two.
 --   - QFormat and QFormat_Array types are defined in the package 'Types'.
---
--- Revision history:
---   11-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -53,30 +52,33 @@ entity FP_Add_Array is
     port (
         i_clk   : in std_logic;
         i_rstn   : in std_logic;
-
-        i_a     : in QFormat_Array(INPUT_SIZE-1 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
-        o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0)
+        i_valid : std_logic;
+        i_data     : in QFormat_Array(INPUT_SIZE-1 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        o_data     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        o_ready : out std_logic
     );
 end entity FP_Add_Array;
 
 architecture FP_Add_Array_serial_arch of FP_Add_Array is 
 
     component FP_Add is
-        generic (
-            INTEGER_PART    : integer := 4;
-            FRACTIONAL_PART : integer := 4
-        );
-        port (
-            i_clk   : in std_logic;
-            i_rstn   : in std_logic;
-            i_a     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
-            i_b     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
-            o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0)
-        );
-    end component;
+    generic (
+        INTEGER_PART    : integer := 4;
+        FRACTIONAL_PART : integer := 4
+    );
+    port (
+        i_clk   : in std_logic;
+        i_rstn   : in std_logic;
+        i_valid  : std_logic;
+        i_a     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        i_b     : in QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        o_y     : out QFormat(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+        o_ready : out std_logic
+    );
+    end component FP_Add;
 
     signal s_mid_results : QFormat_Array((INPUT_SIZE - 2) downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
-
+    signal s_ready : std_logic_vector((INPUT_SIZE-2) downto 0);
 begin
     
     SERIAL_ARRAY_GEN: for i in (INPUT_SIZE-2) downto 0 generate
@@ -90,9 +92,11 @@ begin
             port map(
                 i_clk => i_clk,
                 i_rstn => i_rstn,
-                i_a => i_a(i),
-                i_b => i_a(i+1),
-                o_y => s_mid_results(i)
+                i_valid => i_valid,
+                i_a => i_data(i),
+                i_b => i_data(i+1),
+                o_y => s_mid_results(i),
+                o_ready => s_ready(i)
             );
         end generate FIRST_ADDER;
 
@@ -105,21 +109,26 @@ begin
             port map(
                 i_clk => i_clk,
                 i_rstn => i_rstn,
-                i_a => i_a(i),
+                i_valid => s_ready(i+1),
+                i_a => i_data(i),
                 i_b => s_mid_results(i+1),
-                o_y => s_mid_results(i)
+                o_y => s_mid_results(i),
+                o_ready => s_ready(i)
             );
         end generate NEXT_ADDERS;
 
     end generate SERIAL_ARRAY_GEN;
 
-    o_y <= s_mid_results(0);
+    o_ready <= s_ready(0);
+    o_data <= s_mid_results(0);
 
 end architecture;
 
 architecture FP_Add_Array_parallel_arch of FP_Add_Array is 
 
+    constant C_LAYER_NUM : integer := integer(floor(log2(real(INPUT_SIZE))));
     signal s_mid_results : QFormat_Array(INPUT_SIZE - 2 downto 0)(INTEGER_PART + FRACTIONAL_PART - 1 downto 0);
+    signal s_ready : std_logic_vector(C_LAYER_NUM downto 1);
 
     component FP_Add_Layer is
         generic (
@@ -128,21 +137,20 @@ architecture FP_Add_Array_parallel_arch of FP_Add_Array is
             INPUT_SIZE      : integer := 16
         );
         port (
-            i_clk   : in  std_logic;
-            i_rstn  : in  std_logic;
-
-            i_a     : in  QFormat_Array(INPUT_SIZE - 1 downto 0)
-                            ((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
-            o_y     : out QFormat_Array((INPUT_SIZE / 2) - 1 downto 0)
-                            ((INTEGER_PART + FRACTIONAL_PART - 1) downto 0)
+            i_clk   : in std_logic;
+            i_rstn   : in std_logic;
+            i_valid  : in std_logic;
+            i_data     : in QFormat_Array(INPUT_SIZE - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
+            o_data     : out QFormat_Array((INPUT_SIZE / 2) - 1 downto 0)((INTEGER_PART + FRACTIONAL_PART - 1) downto 0);
+            o_ready : out std_logic
         );
     end component FP_Add_Layer;
 
 begin
     
-    ARRAY_GEN: for i in integer(floor(log2(real(INPUT_SIZE)))) downto 1 generate
+    ARRAY_GEN: for i in C_LAYER_NUM downto 1 generate
         
-        INPUT_LAYER: if (i = integer(floor(log2(real(INPUT_SIZE))))) generate 
+        INPUT_LAYER: if (i = C_LAYER_NUM) generate 
             INPUT_LAYER_INSTANCE: FP_Add_Layer
             generic map(
                 INTEGER_PART => INTEGER_PART,
@@ -152,12 +160,14 @@ begin
             port map(
                 i_clk => i_clk,
                 i_rstn => i_rstn,
-                i_a => i_a,
-                o_y => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) )
+                i_valid => i_valid,
+                i_data => i_data,
+                o_data => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) ),
+                o_ready => s_ready(i)
             );
         end generate INPUT_LAYER;
 
-        MIDDLE_LAYERS: if (i /= integer(floor(log2(real(INPUT_SIZE))))) generate
+        MIDDLE_LAYERS: if (i /= C_LAYER_NUM) generate
             MIDDLE_LAYER_INSTANCE: FP_Add_Layer
             generic map(
                 INTEGER_PART => INTEGER_PART,
@@ -167,13 +177,16 @@ begin
             port map(
                 i_clk => i_clk,
                 i_rstn => i_rstn,
-                i_a => s_mid_results( (2**(i+1) - 2) downto (2**(i+1) - 2**i - 1) ),
-                o_y => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) )
+                i_valid => s_ready(i+1),
+                i_data => s_mid_results( (2**(i+1) - 2) downto (2**(i+1) - 2**i - 1) ),
+                o_data => s_mid_results( (2**i - 2) downto (2**i - 2**(i-1) - 1) ),
+                o_ready => s_ready(i)
             );
         end generate MIDDLE_LAYERS;
         
      end generate ARRAY_GEN;
 
-    o_y <= s_mid_results(0);
+    o_ready <= s_ready(1);
+    o_data <= s_mid_results(0);
 
 end architecture FP_Add_Array_parallel_arch;

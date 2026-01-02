@@ -20,15 +20,13 @@
 --   i_data  : Signed input data.
 --   i_valid : Data valid signal; enables computation when high.
 --   o_data  : Signed output data after ReLU activation.
+--   o_ready : Ready signal output.
 --
 -- Notes:
 --   The ReLU function is defined as:
 --     ReLU(x) = max(0, x)
 --   This implementation uses the most significant bit of the signed input
 --   to detect negative values.
---
--- Revision history:
---   30-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -42,28 +40,33 @@ entity Activation_Function is
     );
     port (
         i_clk       : in  std_logic;
-        i_rst       : in  std_logic;
+        i_rstn       : in  std_logic;
         i_data   : in  signed(DATA_WIDTH - 1 downto 0);
         i_valid  : in  std_logic;
-        o_data  : out signed(DATA_WIDTH - 1 downto 0)
+        o_data  : out signed(DATA_WIDTH - 1 downto 0);
+        o_ready : out std_logic
     );
 end entity Activation_Function;
 
 architecture ReLU of Activation_Function is
-    signal s_data  : std_logic_vector(DATA_WIDTH - 1 downto 0);
+    signal s_data  : signed(DATA_WIDTH - 1 downto 0);
 begin
     process(i_clk) begin
         if rising_edge(i_clk) then
             if i_rstn = '0' then
                 s_data <= (others => '0');
+                o_ready <= '0';
             else
-                if i_valid = 1 then
+                if i_valid = '1' then
                     if i_data(DATA_WIDTH - 1) = '1' then
                         s_data <= (others => '0');
+                        o_ready <= '1';
                     else
                         s_data <= i_data;
+                        o_ready <= '1';
                     end if;
                 else
+                    o_ready <= '0';
                     s_data <= s_data;
                 end if;
             end if;
