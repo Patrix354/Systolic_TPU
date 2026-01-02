@@ -19,19 +19,20 @@
 --   OUT_FRACTIONAL_PART - Number of fractional bits in the output Q-format.
 --
 -- Ports:
---   i_a : Input array of fixed-point values in input Q-format
+--   i_clk  : Clock input; accumulation and synchronous add occur on rising edge.
+--   i_rstn : Active-low reset; clears internal registers and output.
+--   i_data  : Input array of fixed-point values in input Q-format
 --         QFormat_Array(INPUT_SIZE)(IN_INTEGER_PART+IN_FRACTIONAL_PART).
---   o_y : Output array of fixed-point values in output Q-format
+--   i_valid : Data valid signal; enables computation when high.
+--   o_data  : Output array of fixed-point values in output Q-format
 --         QFormat_Array(INPUT_SIZE)(OUT_INTEGER_PART+OUT_FRACTIONAL_PART).
+--   o_ready : Ready signal output
 --
 -- Notes:
 --   - The QFormat_Array type is defined as an array of QFormat elements.
 --   - Each array element is independently extended using a dedicated instance
 --     of the FP_Extender component generated in a for-generate loop.
 --   - The module is fully combinational and does not require a clock or reset.
---
--- Revision history:
---   30-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;

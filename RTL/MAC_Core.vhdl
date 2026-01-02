@@ -18,7 +18,7 @@ entity MAC_Core is
         i_zero : in std_logic;
         i_data : in QFormat_Array((2*INPUT_PAIRS_NUMBER)-1 downto 0)(IN_INTEGER_PART + IN_FRACTIONAL_PART - 1 downto 0);
         o_data : out QFormat(OUT_INTEGER_PART + OUT_FRACTIONAL_PART - 1 downto 0);
-        o_busy : out std_logic
+        o_done : out std_logic
     );
 end entity;
 
@@ -229,21 +229,19 @@ begin
                 for i in (2*INPUT_PAIRS_NUMBER)-1 downto 0 loop
                     s_in_data(i) <= (others => '0');
                 end loop;
-                s_busy <= '0';
                 s_out_data <= (others => '0');
             else
                 if i_valid = '1' then
                     s_in_data <= i_data;
                     s_propagating_valid(0) <= '1';
-                    s_busy <= '1';
                     s_out_data <= s_out_data;
                 else
-                    if s_busy = '1' and s_done = '1' then
-                        s_busy <= '0';
+                    if s_done = '1' then
                         s_out_data <= s_activation_output;
+                        o_done <= '1';
                     else
-                        s_busy <= s_busy;
                         s_out_data <= s_out_data;
+                        o_done <= '0';
                     end if ;
                     s_in_data <= s_in_data;
                     s_propagating_valid(0) <= '0';
@@ -254,7 +252,6 @@ begin
     end process;
 
     o_data <= s_out_data;
-    o_busy <= s_busy;
 
 end architecture;
 

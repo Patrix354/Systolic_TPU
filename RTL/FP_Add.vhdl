@@ -16,16 +16,11 @@
 -- Ports:
 --   i_clk  : Clock input; addition occurs on rising edge.
 --   i_rstn : Active-low reset; clears the output register.
+--   i_valid : Data valid signal; enables computation when high.
 --   i_a    : First operand (QFormat type).
 --   i_b    : Second operand (QFormat type).
 --   o_y    : Output sum (QFormat type).
---
--- Notes:
---   The QFormat type is defined as a subtype of 'signed' 
---
--- Revision history:
---   31-10-2025 : Initial version
---   11-11-2025 : Edited output length (output carry is ommited)
+--   o_ready: Ready signal output
 -------------------------------------------------------------------------------
 
 library ieee;

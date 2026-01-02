@@ -19,8 +19,10 @@
 --   i_rstn: Active-low reset; clears the output register.
 --   i_a   : First input operand in QFormat(INTEGER_PART+FRACTIONAL_PART).
 --   i_b   : Second input operand in QFormat(INTEGER_PART+FRACTIONAL_PART).
+--   i_valid : Data valid signal; enables computation when high.
 --   o_y   : Output product in extended Q-format with doubled bit width:
 --           QFormat(2*(INTEGER_PART+FRACTIONAL_PART)).
+--   o_ready : Ready signal output.
 --
 -- Notes:
 --   - The QFormat type is defined as a subtype of 'signed'.
@@ -28,9 +30,6 @@
 --   - No rounding or saturation is applied to the output.
 --   - The result is purely registered and updated every clock cycle when
 --     reset is deasserted.
---
--- Revision history:
---   30-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;

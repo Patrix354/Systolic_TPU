@@ -23,31 +23,12 @@
 -- Ports:
 --   i_clk  : Clock input; accumulation and synchronous add occur on rising edge.
 --   i_rstn : Active-low reset; clears internal registers and output.
---   i_en   : Accumulate enable; when '1' the previous accumulator value is
---            fed to the adder (allows accumulation). When '0' accumulation is
---            inhibited (adder receives zero as the previous value).
+--   i_valid : Data valid signal; enables computation when high.
 --   i_zero : Zero input qualifier; when '1' the extended input is replaced by
 --            zero for the current accumulation (used to clear or mask input).
 --   i_data : Input operand in input QFormat(IN_INTEGER_PART+IN_FRACTIONAL_PART).
 --   o_data : Accumulated output in output QFormat(OUT_INTEGER_PART+OUT_FRACTIONAL_PART).
---
--- Notes:
---   - The QFormat type is defined as a subtype of 'signed' and represents
---     fixed-point numbers in Q(INTEGER_PART.FRACTIONAL_PART) format.
---   - Input data is sign-extended to the output width by the FP_Extender
---     component (s_ext_data) before being supplied to the adder.
---   - The adder component FP_Add (ACC_SUM_CELL) performs the synchronous
---     addition and registers the result in s_acc_data which drives o_data.
---   - Internal signals:
---       s_ext_data : Extended input in output Q-format.
---       s_acc_data : Current accumulator value (registered).
---       s_a        : Adder operand A (either extended input or zero).
---       s_b        : Adder operand B (either previous accumulator or zero).
---   - Reset behavior: when i_rstn = '0', o_data and internal control signals
---     are driven to zero.
---
--- Revision history:
---   30-11-2025 : Initial version
+--   o_ready: Ready signal output
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -127,20 +108,39 @@ begin
     s_add_valid <= s_ext_ready when s_zero = '0' else '1';
 
 
-    ACC_SUM_CELL: FP_Add
-         generic map(
-             INTEGER_PART => OUT_INTEGER_PART,
-             FRACTIONAL_PART => OUT_FRACTIONAL_PART
-         )
-         port map(
-             i_clk => i_clk,
-             i_rstn => i_rstn,
-             i_valid => s_add_valid,
-             i_a => s_a,
-             i_b => s_b,
-             o_y => s_acc_data,
-             o_ready => o_ready
-         );
+
+    process(i_clk) begin
+        if rising_edge(i_clk) then
+            if i_rstn = '0' then
+                s_acc_data <= (others => '0');
+                o_ready <= '0';
+            else
+                if s_add_valid = '1' then
+                    s_acc_data <= resize(s_a, OUT_INTEGER_PART + OUT_FRACTIONAL_PART) + resize(s_b, OUT_INTEGER_PART + OUT_FRACTIONAL_PART);    
+                    o_ready <= '1';
+                else
+                    s_acc_data <= s_acc_data;    
+                    o_ready <= '0';
+                end if;
+                
+            end if;
+        end if;
+
+    end process;
+    -- ACC_SUM_CELL: FP_Add
+    --      generic map(
+    --          INTEGER_PART => OUT_INTEGER_PART,
+    --          FRACTIONAL_PART => OUT_FRACTIONAL_PART
+    --      )
+    --      port map(
+    --          i_clk => i_clk,
+    --          i_rstn => i_rstn,
+    --          i_valid => s_add_valid,
+    --          i_a => s_a,
+    --          i_b => s_b,
+    --          o_y => s_acc_data,
+    --          o_ready => o_ready
+    --      );
 
     SIGNED_EXT: FP_Extender 
         generic map(

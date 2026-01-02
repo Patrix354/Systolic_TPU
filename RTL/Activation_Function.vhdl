@@ -20,15 +20,13 @@
 --   i_data  : Signed input data.
 --   i_valid : Data valid signal; enables computation when high.
 --   o_data  : Signed output data after ReLU activation.
+--   o_ready : Ready signal output.
 --
 -- Notes:
 --   The ReLU function is defined as:
 --     ReLU(x) = max(0, x)
 --   This implementation uses the most significant bit of the signed input
 --   to detect negative values.
---
--- Revision history:
---   30-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;

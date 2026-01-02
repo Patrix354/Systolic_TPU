@@ -17,15 +17,14 @@
 -- Ports:
 --   i_clk  : Clock input; triggers addition on rising edge.
 --   i_rstn : Active-low reset; clears outputs.
---   i_a    : Input array of Q-format numbers to be summed pairwise.
---   o_y    : Output array containing results of pairwise additions.
+--   i_data : Input array of Q-format numbers to be summed pairwise.
+--   i_valid : Data valid signal; enables computation when high.
+--   o_data : Output array containing results of pairwise additions.
+--   o_ready: Ready signal output
 --
 -- Notes:
 --   - The output array has a size equal to INPUT_SIZE / 2.
 --   - The QFormat_Array type is defined in the package 'Types' as 'array (natural range <>) of signed;'
---
--- Revision history:
---   11-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;

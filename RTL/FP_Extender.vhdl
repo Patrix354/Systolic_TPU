@@ -17,10 +17,14 @@
 --   OUT_FRACTIONAL_PART - Number of fractional bits in the output Q-format.
 --
 -- Ports:
+--   i_clk  : Clock input; accumulation and synchronous add occur on rising edge.
+--   i_rstn : Active-low reset; clears internal registers and output.
 --   i_data : Input fixed-point value in input Q-format
 --            Q(IN_INTEGER_PART.IN_FRACTIONAL_PART).
+--   i_valid : Data valid signal; enables computation when high.
 --   o_data : Output fixed-point value in output Q-format
 --            Q(OUT_INTEGER_PART.OUT_FRACTIONAL_PART).
+--   o_ready : Ready signal output.
 --
 -- Notes:
 --   - The QFormat type is defined as a subtype of 'signed'.
@@ -31,9 +35,6 @@
 --   - The fractional part is always extended with zeros, effectively
 --     increasing resolution without changing the represented value.
 --   - The module is fully combinational and does not require a clock or reset.
---
--- Revision history:
---   30-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -93,9 +94,9 @@ begin
 
                 if s_active = '1' then
                     o_ready <= '1';
-                    s_out_data <= QFormat(s_integer_zeros & std_logic_vector(i_data) & s_fractional_zeros) when 
-                                    i_data(IN_INTEGER_PART+IN_FRACTIONAL_PART-1)='0' else
-                                    QFormat(s_integer_ones & std_logic_vector(i_data) & s_fractional_zeros);
+                    s_out_data <= QFormat(s_integer_zeros & std_logic_vector(s_in_data) & s_fractional_zeros) when 
+                                    s_in_data(IN_INTEGER_PART+IN_FRACTIONAL_PART-1)='0' else
+                                    QFormat(s_integer_ones & std_logic_vector(s_in_data) & s_fractional_zeros);
                 else
                     s_out_data <= s_out_data;
                     o_ready <= '0';
@@ -104,5 +105,7 @@ begin
         end if;
 
     end process;
+
+    
 
 end architecture FP_Extender_arch;

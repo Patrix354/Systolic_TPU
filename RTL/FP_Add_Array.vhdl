@@ -26,16 +26,15 @@
 -- Ports:
 --   i_clk  : Clock input; triggers synchronous additions.
 --   i_rstn : Active-low reset; clears internal registers.
---   i_a    : Input array of Q-format values.
---   o_y    : Single Q-format output representing the accumulated sum.
+--   i_valid : Data valid signal; enables computation when high.
+--   i_data : Input array of Q-format values.
+--   o_data : Single Q-format output representing the accumulated sum.
+--   o_ready: Ready signal output 
 --
 -- Notes:
 --   - Both architectures rely on FP_Add as the basic fixed-point adder block.
 --   - The parallel architecture assumes INPUT_SIZE is a power of two.
 --   - QFormat and QFormat_Array types are defined in the package 'Types'.
---
--- Revision history:
---   11-11-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;

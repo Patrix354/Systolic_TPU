@@ -8,11 +8,11 @@ import random
 import logging
 
 class MAC_Core_monitor:
-    def __init__(self, name, dut, clk, rstn, busy, data, outQueue):
+    def __init__(self, name, dut, clk, rstn, ready, data, outQueue):
         self._dut = dut
         self._clk = clk
         self._rstn = rstn
-        self._busy = busy
+        self._ready = ready
         self._data = data
         self._task: Task[None] | None = None
         self._outQueue = outQueue
@@ -33,10 +33,9 @@ class MAC_Core_monitor:
         await RisingEdge(self._rstn)
 
         while True:
-            await RisingEdge(self._busy)
-            await FallingEdge(self._busy)
-            await self.wait(1)
-            await self._outQueue.put(self._data.value)
+            await RisingEdge(self._clk)
+            if self._ready.value == 1:
+                await self._outQueue.put(self._data.value)
 
 class MAC_Core_driver:
     def __init__(self, name, dut, clk, rstn, valid, zero, data, period):
@@ -147,7 +146,7 @@ class MAC_Core_tb:
             dut = self._dut,
             clk = self._dut.i_clk,
             rstn = self._dut.i_rstn,
-            busy=self._dut.o_busy,
+            ready=self._dut.o_done,
             data = self._dut.o_data,
             name="MAC_Core_monitor",
             outQueue=self._monitorQueue

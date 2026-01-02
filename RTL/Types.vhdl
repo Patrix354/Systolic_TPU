@@ -18,9 +18,6 @@
 -- Notes:
 --   - The QFormat subtype does not specify bit width; it must be defined
 --     by the modules that use it (e.g., through generics).
---
--- Revision history:
---   31-10-2025 : Initial version
 -------------------------------------------------------------------------------
 
 library ieee;
