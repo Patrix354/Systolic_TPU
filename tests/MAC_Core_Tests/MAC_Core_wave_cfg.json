@@ -1,0 +1,329 @@
+{
+  "extensionVersion": "1.4.4",
+  "fileName": "/home/laura/Documents/Magisterka/mac-cell/tests/MAC_Core_Tests/mac_core.vcd",
+  "markerTime": 83600000,
+  "altMarkerTime": null,
+  "selectedSignal": {
+    "name": "mac_core.acc_layer.i_rstn",
+    "msb": -1,
+    "lsb": -1
+  },
+  "zoomRatio": 0.0000025,
+  "scrollLeft": 0,
+  "displayedSignals": [
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 72,
+      "name": "mac_core.acc_layer.i_clk",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "nameType": "fullPath",
+      "customName": "i_clk",
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 73,
+      "name": "mac_core.acc_layer.i_rstn",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "nameType": "fullPath",
+      "customName": "i_rstn",
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 7,
+      "name": "mac_core.s_done",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "nameType": "fullPath",
+      "customName": "s_done",
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "netlist-variable",
+      "netlistId": 2,
+      "name": "mac_core.i_valid",
+      "numberFormat": "binary",
+      "colorIndex": 0,
+      "rowHeight": 1,
+      "verticalScale": 1,
+      "nameType": "fullPath",
+      "customName": "i_valid",
+      "renderType": "binary",
+      "valueLinkCommand": ""
+    },
+    {
+      "dataType": "signal-group",
+      "groupName": "Mul stage",
+      "collapseState": 2,
+      "children": [
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 19,
+          "name": "mac_core.mul_layer(0).single_mul.s_a",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "s_a",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 20,
+          "name": "mac_core.mul_layer(0).single_mul.s_b",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "s_b",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 17,
+          "name": "mac_core.mul_layer(0).single_mul.o_y",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_y",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 16,
+          "name": "mac_core.mul_layer(0).single_mul.o_ready",
+          "numberFormat": "binary",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_ready",
+          "renderType": "binary",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 29,
+          "name": "mac_core.mul_layer(1).single_mul.s_b",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "s_b",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 28,
+          "name": "mac_core.mul_layer(1).single_mul.s_a",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "s_a",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 26,
+          "name": "mac_core.mul_layer(1).single_mul.o_y",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_y",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 25,
+          "name": "mac_core.mul_layer(1).single_mul.o_ready",
+          "numberFormat": "binary",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_ready",
+          "renderType": "binary",
+          "valueLinkCommand": ""
+        }
+      ]
+    },
+    {
+      "dataType": "signal-group",
+      "groupName": "Add Layer",
+      "collapseState": 2,
+      "children": [
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 66,
+          "name": "mac_core.add_layer.array_gen(1).input_layer.input_layer_instance.layer_gen(0).single_fp_add.o_ready",
+          "numberFormat": "binary",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_ready",
+          "renderType": "binary",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 69,
+          "name": "mac_core.add_layer.array_gen(1).input_layer.input_layer_instance.layer_gen(0).single_fp_add.s_a",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "s_a",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 70,
+          "name": "mac_core.add_layer.array_gen(1).input_layer.input_layer_instance.layer_gen(0).single_fp_add.s_b",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "s_b",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 67,
+          "name": "mac_core.add_layer.array_gen(1).input_layer.input_layer_instance.layer_gen(0).single_fp_add.o_y",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_y",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        }
+      ]
+    },
+    {
+      "dataType": "signal-group",
+      "groupName": "Act Layer",
+      "collapseState": 2,
+      "children": [
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 100,
+          "name": "mac_core.act_layer.o_data",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_data",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 98,
+          "name": "mac_core.act_layer.i_data",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "i_data",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 101,
+          "name": "mac_core.act_layer.o_ready",
+          "numberFormat": "binary",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_ready",
+          "renderType": "binary",
+          "valueLinkCommand": ""
+        }
+      ]
+    },
+    {
+      "dataType": "signal-group",
+      "groupName": "Acc Layer",
+      "collapseState": 2,
+      "children": [
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 77,
+          "name": "mac_core.acc_layer.o_data",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_data",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 78,
+          "name": "mac_core.acc_layer.o_ready",
+          "numberFormat": "binary",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "o_ready",
+          "renderType": "binary",
+          "valueLinkCommand": ""
+        },
+        {
+          "dataType": "netlist-variable",
+          "netlistId": 76,
+          "name": "mac_core.acc_layer.i_data",
+          "numberFormat": "hexadecimal",
+          "colorIndex": 0,
+          "rowHeight": 1,
+          "verticalScale": 1,
+          "nameType": "fullPath",
+          "customName": "i_data",
+          "renderType": "multiBit",
+          "valueLinkCommand": ""
+        }
+      ]
+    }
+  ]
+}

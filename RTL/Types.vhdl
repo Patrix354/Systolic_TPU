@@ -3,22 +3,27 @@
 -- Project    : MAC Cell
 -- File       : Types.vhdl
 -- Author     : Laura Korycka
+--
 -- Description:
---   This package defines common data types used across the fixed-point
---   arithmetic modules. It provides type aliases for Q-format numbers
---   and arrays of such values, allowing for consistent and parameterizable
---   design of arithmetic blocks.
+--   This package defines common data types used across the project.
+--   It includes type aliases for fixed-point (Q-format) arithmetic as well as
+--   structured types used for communication and control between modules.
+--
+--   The package centralizes type definitions to ensure consistency and
+--   readability across arithmetic blocks and system-level interconnect logic.
 --
 -- Declarations:
---   QFormat        - Subtype of 'signed' representing a fixed-point number
---                    in Q-format (integer and fractional parts defined by generics).
---   QFormat_Array  - Array type for handling vectors of Q-format numbers,
---                    used in multi-element operations.
+--   QFormat         - Subtype of 'signed' representing a fixed-point number
+--                     in Q-format. Bit width is defined by the using modules
+--                     (e.g., via generics).
+--   QFormat_Array   - Unconstrained array type for vectors of Q-format values,
+--                     useful for parallel or multi-element operations.
+--   NoC_connect     - Record type defining a simple NoC-style interface,
+--                     including clocking, control signals, address, data
+--                     channels, and operation encoding.
 --
--- Notes:
---   - The QFormat subtype does not specify bit width; it must be defined
---     by the modules that use it (e.g., through generics).
 -------------------------------------------------------------------------------
+
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -28,5 +33,16 @@ package Types is
 
     subtype QFormat is signed;
     type QFormat_Array is array (natural range <>) of signed;
+
+    type NoC_connect is record
+    clk : std_logic;
+    rstn : std_logic;
+    valid : std_logic;
+    address : std_logic_vector(15 downto 0);
+    m_data : std_logic_vector(63 downto 0);
+    s_data : std_logic_vector(63 downto 0);
+    ready : std_logic;
+    operation : std_logic_vector(3 downto 0);
+    end record NoC_connect;
 
 end package Types;
