@@ -69,6 +69,12 @@ class MAC_Core_driver:
         await self.wait(2)        
         self._rstn.value = 1
         await self.wait(2)
+    
+    async def zero_acc(self):
+        self._zero.value = 1
+        await self.wait(2)
+        self._zero.value = 0
+        await self.wait(2)
 
     async def send(self, input_list):
         if len(input_list) != len(self._data):
