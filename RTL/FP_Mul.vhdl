@@ -96,3 +96,32 @@ begin
     end process;
 
 end architecture;
+
+architecture FP_Mul_serial of FP_Mul is 
+    constant C_INPUT_BIT_LEN : natural := INTEGER_PART + FRACTIONAL_PART;
+    constant C_OUTPUT_BIT_LEN : natural := 2 * (INTEGER_PART + FRACTIONAL_PART);
+
+    signal s_en_pipe : std_logic_vector(C_INPUT_BIT_LEN - 1 downto 0);
+    signal s_a_pipe : QFormat_Array(C_INPUT_BIT_LEN - 1 downto 0)(C_OUTPUT_BIT_LEN - 1 downto 0);
+    signal s_b_pipe : QFormat_Array(C_INPUT_BIT_LEN - 1 downto 0)(C_OUTPUT_BIT_LEN - 1 downto 0);
+begin
+
+  process(i_clk)
+  begin
+    if rising_edge(i_clk) then
+      if (i_rstn = '0') then
+
+      else
+        gen_shifts : for i in C_INPUT_BIT_LEN-1 downto 1 generate
+        begin   
+            s_b_pipe(i) <= s_b_pipe(i-1);
+        end generate gen_shifts;      
+      end if;
+    end if;
+    
+
+
+  end process;
+
+  
+end architecture FP_Mul_serial;
