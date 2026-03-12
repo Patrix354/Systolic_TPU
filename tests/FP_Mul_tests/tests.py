@@ -58,9 +58,6 @@ class FP_Mul_driver:
         self.name = name
         self.log = logging.getLogger(name)
 
-    def start_clock(self):
-        Clock(self._clk, self._period, unit='ns').start()
-
     async def wait(self, cycles):
         for i in range(0, cycles):
             await RisingEdge(self._clk)
@@ -70,9 +67,8 @@ class FP_Mul_driver:
         self._a.value = 0
         self._b.value = 0
         self._valid.value = 0
-        
-        self.start_clock()
-        await self.wait(1)        
+
+        await self.wait(3)        
         self._rstn.value = 1
         await self.wait(2)
         self.log.info("Reset performed")
@@ -87,6 +83,7 @@ class FP_Mul_driver:
         self.log.info("Started")
 
     async def _run(self):
+        Clock(self._clk, self._period, unit='ns').start()
         await self._reset()
 
         while True:
@@ -123,7 +120,7 @@ class FP_Mul_Scoreboard:
             monitorData = await self._monitorQueue.get()
             idealData = await self._idealCaseQueue.get()
             if monitorData != idealData:
-                self.log.error("monitorData != idealData: monitorData = ", monitorData, " , idealData = ", idealData)
+                self.log.error("monitorData != idealData: monitorData = ", monitorData, " , idealData = ", bin(idealData))
                 errors = errors + 1
         return errors
 
@@ -166,7 +163,7 @@ class FP_Mul_tb:
         self.monitor.start()
 
 @cocotb.test()
-async def non_random_entry_test(dut):
+async def pos_neg_entry_test(dut):
     idealCaseQueue = asyncio.Queue()
 
     # Creating two Fixed point numbers 
@@ -186,11 +183,94 @@ async def non_random_entry_test(dut):
     tb = FP_Mul_tb(dut, idealCaseQueue)
     tb.start()
     await tb.driver.send(iA, iB)
-    await tb.driver.wait(10)
+    await tb.driver.wait(100)
 
     # Assert every output number is equal expected value
     assert await tb.scoreboard.verify() == 0
     pass
+
+@cocotb.test()
+async def neg_pos_entry_test(dut):
+    idealCaseQueue = asyncio.Queue()
+
+    # Creating two Fixed point numbers 
+    a = fixedpoint.FixedPoint(-1.5, m=M_bits, n=N_bits, signed=True)
+    b = fixedpoint.FixedPoint(1.5, m=N_bits, n=N_bits, signed=True)
+    c = fp_op.fixed_mul(a, b)   # Fixed point multiplication
+
+    # Conversion Fixed point number to int (raw bits)
+    iA = fp_op.fixed_to_int(a)
+    iB = fp_op.fixed_to_int(b)
+    iC = fp_op.fixed_to_int(c)
+
+    # Defining expected output
+    await idealCaseQueue.put(iC)
+
+    # Run testbench
+    tb = FP_Mul_tb(dut, idealCaseQueue)
+    tb.start()
+    await tb.driver.send(iA, iB)
+    await tb.driver.wait(100)
+
+    # Assert every output number is equal expected value
+    assert await tb.scoreboard.verify() == 0
+    pass
+
+@cocotb.test()
+async def pos_pos_entry_test(dut):
+    idealCaseQueue = asyncio.Queue()
+
+    # Creating two Fixed point numbers 
+    a = fixedpoint.FixedPoint(1.5, m=M_bits, n=N_bits, signed=True)
+    b = fixedpoint.FixedPoint(1.5, m=N_bits, n=N_bits, signed=True)
+    c = fp_op.fixed_mul(a, b)   # Fixed point multiplication
+
+    # Conversion Fixed point number to int (raw bits)
+    iA = fp_op.fixed_to_int(a)
+    iB = fp_op.fixed_to_int(b)
+    iC = fp_op.fixed_to_int(c)
+
+    # Defining expected output
+    await idealCaseQueue.put(iC)
+
+    # Run testbench
+    tb = FP_Mul_tb(dut, idealCaseQueue)
+    tb.start()
+    await tb.driver.send(iA, iB)
+    await tb.driver.wait(100)
+
+    # Assert every output number is equal expected value
+    assert await tb.scoreboard.verify() == 0
+    pass
+
+@cocotb.test()
+async def neg_neg_entry_test(dut):
+    idealCaseQueue = asyncio.Queue()
+
+    # Creating two Fixed point numbers 
+    a = fixedpoint.FixedPoint(-1.5, m=M_bits, n=N_bits, signed=True)
+    b = fixedpoint.FixedPoint(-1.5, m=N_bits, n=N_bits, signed=True)
+    c = fp_op.fixed_mul(a, b)   # Fixed point multiplication
+
+    # Conversion Fixed point number to int (raw bits)
+    iA = fp_op.fixed_to_int(a)
+    iB = fp_op.fixed_to_int(b)
+    iC = fp_op.fixed_to_int(c)
+
+    # Defining expected output
+    await idealCaseQueue.put(iC)
+
+    # Run testbench
+    tb = FP_Mul_tb(dut, idealCaseQueue)
+    tb.start()
+    await tb.driver.send(iA, iB)
+    await tb.driver.wait(100)
+
+    # Assert every output number is equal expected value
+    assert await tb.scoreboard.verify() == 0
+    pass
+
+# TODO: Dodaj testy dla krańców zakresów    
 
 @cocotb.test()
 async def random_entry_test(dut):
@@ -199,7 +279,7 @@ async def random_entry_test(dut):
     # Instantiate testbnch
     tb = FP_Mul_tb(dut, idealCaseQueue)
 
-    for i in range(0, 100):
+    for i in range(0, 10000):
         # Generating random bits 
         rand_a = hex(random.getrandbits(N_bits + M_bits))
         rand_b = hex(random.getrandbits(N_bits + M_bits))
@@ -218,7 +298,7 @@ async def random_entry_test(dut):
 
     # Run testbench
     tb.start()
-    await tb.driver.wait(200)
+    await tb.driver.wait(20000)
 
     # Assert every output number is equal expected value
     assert await tb.scoreboard.verify() == 0

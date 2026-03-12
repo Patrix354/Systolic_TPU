@@ -69,6 +69,7 @@ package Types is
     type NoC_connect_slave_array is array (natural range <>) of NoC_connect_slave;
     type NoC_connect_master_array is array (natural range <>) of NoC_connect_master;
 
+    -- TODO : Spytać się łuczyka o user guide do bloku SRAM w używanej technologii 
     type SRAM_connect_master is record
         s_data : std_logic_vector(C_NOC_DATA_WIDTH-1 downto 0);
         ready : std_logic;
