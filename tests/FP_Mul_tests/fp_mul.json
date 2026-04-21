@@ -1,15 +1,16 @@
 {
-  "extensionVersion": "1.5.0",
-  "fileName": "/home/laura/Documents/Magisterka/mac-cell/tests/FP_Mul_tests/fp_mul.fst",
-  "markerTime": 50000000,
+  "extensionVersion": "1.5.2",
+  "fileName": "/home/laura/Dokumenty/Magisterka/mac-cell/tests/FP_Mul_tests/fp_mul.fst",
+  "markerTime": 4185893804,
   "altMarkerTime": null,
+  "displayTimeUnit": "fs",
   "selectedSignal": {
-    "name": "fp_mul_parallel_wrap.dut.i_clk",
-    "msb": -1,
-    "lsb": -1
+    "name": "fp_mul_parallel_wrap.dut.i_a",
+    "msb": 7,
+    "lsb": 0
   },
-  "zoomRatio": 0.00004,
-  "scrollLeft": 29200000,
+  "zoomRatio": 4.694180538226436e-9,
+  "scrollLeft": 4340490488,
   "displayedSignals": [
     {
       "dataType": "netlist-variable",
@@ -54,7 +55,7 @@
       "dataType": "netlist-variable",
       "netlistId": 10,
       "name": "fp_mul_parallel_wrap.dut.i_a",
-      "numberFormat": "binary",
+      "numberFormat": "fixedpoint_s_4",
       "colorIndex": 0,
       "rowHeight": 1,
       "verticalScale": 1,
@@ -67,7 +68,7 @@
       "dataType": "netlist-variable",
       "netlistId": 11,
       "name": "fp_mul_parallel_wrap.dut.i_b",
-      "numberFormat": "binary",
+      "numberFormat": "fixedpoint_s_4",
       "colorIndex": 0,
       "rowHeight": 1,
       "verticalScale": 1,

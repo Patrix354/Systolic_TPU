@@ -89,7 +89,7 @@ begin
                 INTEGER_PART => INTEGER_PART,
                 FRACTIONAL_PART => FRACTIONAL_PART
             )
-            port map(
+            port map( 
                 i_clk => i_clk,
                 i_rstn => i_rstn,
                 i_valid => i_valid,

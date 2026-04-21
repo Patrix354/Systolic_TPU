@@ -270,6 +270,67 @@ async def neg_neg_entry_test(dut):
     assert await tb.scoreboard.verify() == 0
     pass
 
+@cocotb.test()
+async def random_min_entry_test(dut):
+    idealCaseQueue = asyncio.Queue()
+
+    rand_a = hex(random.getrandbits(N_bits + M_bits))
+    # Creating two Fixed point numbers 
+    a = fixedpoint.FixedPoint(rand_a, m=M_bits, n=N_bits, signed=True)
+    b = fixedpoint.FixedPoint(-8, m=N_bits, n=N_bits, signed=True)
+    c = fp_op.fixed_mul(a, b)   # Fixed point multiplication
+
+    # Conversion Fixed point number to int (raw bits)
+    iA = fp_op.fixed_to_int(a)
+    iB = fp_op.fixed_to_int(b)
+    iC = fp_op.fixed_to_int(c)
+
+    # Defining expected output
+    for i in range(2):
+        await idealCaseQueue.put(iC)
+
+    # Run testbench
+    tb = FP_Mul_tb(dut, idealCaseQueue)
+    tb.start()
+    await tb.driver.send(iA, iB)
+    await tb.driver.send(iB, iA)
+    await tb.driver.wait(100)
+
+    # Assert every output number is equal expected value
+    assert await tb.scoreboard.verify() == 0
+    pass
+
+
+@cocotb.test()
+async def random_max_entry_test(dut):
+    idealCaseQueue = asyncio.Queue()
+
+    rand_a = hex(random.getrandbits(N_bits + M_bits))
+    # Creating two Fixed point numbers 
+    a = fixedpoint.FixedPoint(rand_a, m=M_bits, n=N_bits, signed=True)
+    b = fixedpoint.FixedPoint('0b01111111', m=N_bits, n=N_bits, signed=True)
+    c = fp_op.fixed_mul(a, b)   # Fixed point multiplication
+
+    # Conversion Fixed point number to int (raw bits)
+    iA = fp_op.fixed_to_int(a)
+    iB = fp_op.fixed_to_int(b)
+    iC = fp_op.fixed_to_int(c)
+
+    # Defining expected output
+    for i in range(2):
+        await idealCaseQueue.put(iC)
+
+    # Run testbench
+    tb = FP_Mul_tb(dut, idealCaseQueue)
+    tb.start()
+    await tb.driver.send(iA, iB)
+    await tb.driver.send(iB, iA)
+    await tb.driver.wait(100)
+
+    # Assert every output number is equal expected value
+    assert await tb.scoreboard.verify() == 0
+    pass
+
 # TODO: Dodaj testy dla krańców zakresów    
 
 @cocotb.test()

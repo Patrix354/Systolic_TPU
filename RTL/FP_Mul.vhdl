@@ -128,6 +128,8 @@ architecture FP_Mul_parallel of FP_Mul is
     constant C_LEADING_ONES : std_logic_vector((C_OUTPUT_BIT_LEN - C_INPUT_BIT_LEN - 1) downto 0) := 
     (others => '1'); 
 
+    constant C_ALL_ZEROS : QFormat(C_INPUT_BIT_LEN - 2 downto 0) := (others => '0');
+
     signal s_en_pipe : std_logic_vector(C_INPUT_BIT_LEN - 1 downto 0);
     signal s_neg_pipe : std_logic_vector(C_INPUT_BIT_LEN - 1 downto 0);
     signal s_a_pipe : QFormat_Array(C_INPUT_BIT_LEN - 1 downto 0)(C_INPUT_BIT_LEN - 1 downto 0);
@@ -149,18 +151,33 @@ begin
         s_en_pipe <= (others => '0');
         s_neg_pipe <= (others => '0');
       else
+      
+        if(i_a(i_a'high) = '1' and i_a(i_a'high-1 downto 0) = C_ALL_ZEROS) then 
+            if(i_b(C_INPUT_BIT_LEN - 1) = '1') then
+                s_a_pipe(0) <= (not i_b) + '1';
+                s_neg_pipe(0) <= '1';
+            else
+                s_a_pipe(0) <= i_b;
+                s_neg_pipe(0) <= '0';
+            end if;
 
-        if(i_a(C_INPUT_BIT_LEN - 1) = '1') then
-            s_a_pipe(0) <= (not i_a) + '1';
-            s_neg_pipe(0) <= '1';
+            s_b_pipe(0) <= QFormat(C_LEADING_ZEROS & std_logic_vector(i_a)) when 
+                                        i_a(C_INPUT_BIT_LEN - 1)='0' else
+                                        QFormat(C_LEADING_ONES & std_logic_vector(i_a));
         else
-            s_a_pipe(0) <= i_a;
-            s_neg_pipe(0) <= '0';
+            if(i_a(C_INPUT_BIT_LEN - 1) = '1') then
+                s_a_pipe(0) <= (not i_a) + '1';
+                s_neg_pipe(0) <= '1';
+            else
+                s_a_pipe(0) <= i_a;
+                s_neg_pipe(0) <= '0';
+            end if;
+
+            s_b_pipe(0) <= QFormat(C_LEADING_ZEROS & std_logic_vector(i_b)) when 
+                                        i_b(C_INPUT_BIT_LEN - 1)='0' else
+                                        QFormat(C_LEADING_ONES & std_logic_vector(i_b));
         end if;
-        
-        s_b_pipe(0) <= QFormat(C_LEADING_ZEROS & std_logic_vector(i_b)) when 
-                                    i_b(C_INPUT_BIT_LEN - 1)='0' else
-                                    QFormat(C_LEADING_ONES & std_logic_vector(i_b));
+
         s_en_pipe(0) <= i_valid;
 
         s_y_pipe(0) <= (others => '0');
