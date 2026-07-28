@@ -1,36 +1,3 @@
--------------------------------------------------------------------------------
--- Title      : FP_Acc
--- Project    : MAC Cell / Neural Network Accelerator
--- File       : FP_Acc.vhdl
--- Author     : Laura Korycka
--- Description:
---   This module implements a synchronous fixed-point accumulator. Incoming
---   operands in a configurable input Q-format are sign-extended to the wider
---   output Q-format by the FP_Extender and then accumulated using a
---   synchronous fixed-point adder (FP_Add). The accumulation is gated by an
---   enable signal (i_en). When the zero signal (i_zero) is asserted the
---   accumulator input is replaced with zero, effectively clearing the
---   accumulated value on the next addition. The accumulator and its outputs
---   are synchronous to the clock; when active-low reset (i_rstn = '0') is
---   asserted, the output is cleared to zero.
---
--- Generics:
---   IN_INTEGER_PART     - Number of integer bits in the input Q-format.
---   IN_FRACTIONAL_PART  - Number of fractional bits in the input Q-format.
---   OUT_INTEGER_PART    - Number of integer bits in the internal/output Q-format.
---   OUT_FRACTIONAL_PART - Number of fractional bits in the internal/output Q-format.
---
--- Ports:
---   i_clk  : Clock input; accumulation and synchronous add occur on rising edge.
---   i_rstn : Active-low reset; clears internal registers and output.
---   i_valid : Data valid signal; enables computation when high.
---   i_zero : Zero input qualifier; when '1' the extended input is replaced by
---            zero for the current accumulation (used to clear or mask input).
---   i_data : Input operand in input QFormat(IN_INTEGER_PART+IN_FRACTIONAL_PART).
---   o_data : Accumulated output in output QFormat(OUT_INTEGER_PART+OUT_FRACTIONAL_PART).
---   o_ready: Ready signal output
--------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

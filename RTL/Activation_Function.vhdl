@@ -1,34 +1,3 @@
--------------------------------------------------------------------------------
--- Title      : Activation_Function (ReLU)
--- Project    : Neural Network Accelerator
--- File       : Activation_Function.vhdl
--- Author     : Laura Korycka
--- Description: 
---   This module implements a synchronous Rectified Linear Unit (ReLU) activation
---   function for signed fixed-point data. The ReLU operation sets all negative
---   input values to zero while passing non-negative values unchanged.
---   The computation is performed on the rising edge of the clock and is gated
---   by a valid input signal. When reset is active (i_rstn = '0'), the output
---   register is cleared.
---
--- Generics:
---   DATA_WIDTH - Bit width of the signed input and output data.
---
--- Ports:
---   i_clk   : Clock input; ReLU operation is evaluated on the rising edge.
---   i_rstn  : Active-low reset; clears the internal register and output.
---   i_data  : Signed input data.
---   i_valid : Data valid signal; enables computation when high.
---   o_data  : Signed output data after ReLU activation.
---   o_ready : Ready signal output.
---
--- Notes:
---   The ReLU function is defined as:
---     ReLU(x) = max(0, x)
---   This implementation uses the most significant bit of the signed input
---   to detect negative values.
--------------------------------------------------------------------------------
-
 library ieee;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;

@@ -1,27 +1,3 @@
--------------------------------------------------------------------------------
--- Title      : Types
--- Project    : MAC Cell
--- File       : Types.vhdl
--- Author     : Laura Korycka
---
--- Description:
---   Package with shared type definitions and bus interface records used across
---   the MAC Cell project.
---
---   Contents:
---   - Global NoC bus widths (data/address) used by interface records.
---   - NoC operation encoding (write/read/execute).
---   - Fixed-point helper aliases (Q-format), plus an unconstrained array form.
---   - Record types describing a simple valid/ready NoC-style interface:
---       * master channel: valid + address + data + operation
---       * slave channel : ready + return data
---   - Unconstrained array types for bundling multiple NoC interfaces.
---
--- Notes:
---   * This package focuses on structural types (records/enums) and widths.
---     Timing/clocking is handled outside of these type definitions.
--------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

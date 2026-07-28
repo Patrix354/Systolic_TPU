@@ -1,32 +1,3 @@
--------------------------------------------------------------------------------
--- Title      : FP_Add_Layer
--- Project    : MAC Cell
--- File       : FP_Add_Layer.vhdl
--- Author     : Laura Korycka
--- Description:
---   This module implements a parallel layer of fixed-point adders (FP_Add blocks)
---   operating on an array of Q-format values. The layer performs pairwise addition
---   of adjacent input elements, producing an output array whose size is half of
---   the input size. Each FP_Add instance performs a synchronous addition.
---
--- Generics:
---   INTEGER_PART    - Number of integer bits in Q-format representation.
---   FRACTIONAL_PART - Number of fractional bits in Q-format representation.
---   INPUT_SIZE      - Number of input elements (must be an even number).
---
--- Ports:
---   i_clk  : Clock input; triggers addition on rising edge.
---   i_rstn : Active-low reset; clears outputs.
---   i_data : Input array of Q-format numbers to be summed pairwise.
---   i_valid : Data valid signal; enables computation when high.
---   o_data : Output array containing results of pairwise additions.
---   o_ready: Ready signal output
---
--- Notes:
---   - The output array has a size equal to INPUT_SIZE / 2.
---   - The QFormat_Array type is defined in the package 'Types' as 'array (natural range <>) of signed;'
--------------------------------------------------------------------------------
-
 library ieee;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;

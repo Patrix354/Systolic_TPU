@@ -1,28 +1,3 @@
--------------------------------------------------------------------------------
--- Title      : FP_Add
--- Project    : MAC Cell
--- File       : FP_Add.vhdl
--- Author     : Laura Korycka
--- Description: 
---   This module implements a synchronous fixed-point adder operating in Q-format.
---   Both operands are represented as signed fixed-point numbers with a configurable
---   number of integer and fractional bits. The addition is performed on the rising
---   edge of the clock. When reset is active (i_rstn = '0'), the output is cleared.
---
--- Generics:
---   INTEGER_PART    - Number of integer bits in Q-format representation.
---   FRACTIONAL_PART - Number of fractional bits in Q-format representation.
---
--- Ports:
---   i_clk  : Clock input; addition occurs on rising edge.
---   i_rstn : Active-low reset; clears the output register.
---   i_valid : Data valid signal; enables computation when high.
---   i_a    : First operand (QFormat type).
---   i_b    : Second operand (QFormat type).
---   o_y    : Output sum (QFormat type).
---   o_ready: Ready signal output
--------------------------------------------------------------------------------
-
 library ieee;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
