@@ -50,6 +50,6 @@ pip install cocotb pytest fixedpoint
 Każdy moduł posiada osobny zestaw testów w katalogu tests/. Uruchamiane są poprzez wywołanie pliku makefile w katalogu testowym.
 Teści testów są zdefiniowane w plikach **tests.py**. Przykładowe uruchomienie testu:
 ```bash
-cd tests/FP_Mul_tests
+cd tests/npu_mul_tests
 make
 ```
