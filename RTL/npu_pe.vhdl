@@ -8,7 +8,7 @@ entity npu_pe is
     port (
         i_clk   : in std_logic;
         i_rstn   : in std_logic;
-        i_en    : std_logic;
+        i_en    : in std_logic;
         i_w_en  : in std_logic;
         i_w     : in QFormat(C_DATA_WIDTH - 1 downto 0);
         i_x     : in QFormat(C_DATA_WIDTH - 1 downto 0);
@@ -58,6 +58,14 @@ begin
         if rising_edge(i_clk) then
             if i_rstn = '0' then
                 s_w <= (others => '0');
+                for i in 0 to C_DATA_WIDTH - 1 loop
+                    s_y(i) <= (others => '0');
+                end loop;
+
+                for i in 0 to C_DATA_WIDTH + 1 loop
+                    s_x(i) <= (others => '0');
+                end loop;
+                o_en <= '0';
             else
                 if(i_w_en = '1') then
                     s_w <= i_w;

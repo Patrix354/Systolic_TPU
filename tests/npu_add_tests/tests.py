@@ -9,8 +9,8 @@ from QFormat import QFormat, FixedQ
 import random
 
 period_ns = 10
-M_bits = 4
-N_bits = 4
+M_bits = 8
+N_bits = 8
 fmt = QFormat(N_bits, M_bits)
 
 async def reset_seq(dut):
@@ -84,6 +84,19 @@ async def randomised_test(dut):
         # (2 bits shorter because module has equal sized inputs and output. Unused bits will be removed during synthesis)
         a = fmt.from_raw(random.getrandbits(N_bits + M_bits - 2)).to_float()
         b = fmt.from_raw(random.getrandbits(N_bits + M_bits - 2)).to_float()
+    
+        await test_two_numbers(dut, a, b)
+    pass
+
+@cocotb.test()
+async def randomised_test_range_minus_2_2(dut):
+    await reset_seq(dut)
+
+    for i in range(0, 100):
+        # Generating random bit sequence 
+        # (2 bits shorter because module has equal sized inputs and output. Unused bits will be removed during synthesis)
+        a = random.uniform(-2, 2)
+        b = random.uniform(-2, 2)
     
         await test_two_numbers(dut, a, b)
     pass

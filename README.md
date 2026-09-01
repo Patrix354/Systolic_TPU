@@ -1,7 +1,6 @@
 # MAC Cell dla NPU (VHDL + Cocotb)
 
-Projekt zawiera model RTL pojedynczej komórki MAC (Multiply–Accumulate) przeznaczonej do wykorzystania w jednostce NPU (Neural Processing Unit).  
-Docelowo wiele takich komórek ma być połączonych w strukturę opartą o NoC (Network-on-Chip).
+Projekt zawiera model RTL pojedynczej bloku IP implementującego jednostkę TPU m.in. ułatwiającą obliczenia w sieciach neuronowych.
 
 Celem projektu jest przygotowanie modelu RTL do symulacji i weryfikacji funkcjonalnej. Stworzony model RTL zostanie wykorzystany do stworzenia implementacji w technologii UMC 28 nm.
 
@@ -11,9 +10,8 @@ Celem projektu jest przygotowanie modelu RTL do symulacji i weryfikacji funkcjon
 
 - **RTL/** – źródła w języku VHDL. Zawiera implementację wszystkich implementowanych modułów i podmodułów wykorzystywanych w projektcie. 
 - **tests/** – środowisko testowe oparte na frameworku **cocotb**. Zawiera osobne katalogi testów modułów wraz z plikami `Makefile` i skryptami testowymi w Pythonie.  
-- **.venv/** – (nie jest wersjonowany) lokalne środowisko Pythona używane do uruchamiania testów.  
-
-- **wrappers/** - zawiera moduły napisane w języku VHDL używane jako wrappery w symulacji (w przypadku gdy moduł ma więcej niż dwie architektury).
+- **wrappers/** – wrapper'y do wymulowanych modułów.  
+- **.venv/** – (nie jest wersjonowany) lokalne środowisko Pythona używane do uruchamiania testów. 
 ---
 
 ## Wymagania

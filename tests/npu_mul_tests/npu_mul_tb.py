@@ -109,10 +109,11 @@ class npu_mul_Scoreboard:
             return errors
 
         while self._monitorQueue.empty() == False:
+            i = i + 1
             monitorData = await self._monitorQueue.get()
             idealData = await self._idealCaseQueue.get()
             if monitorData != idealData:
-                self.log.error("monitorData != idealData: monitorData = ", monitorData, " , idealData = ", bin(idealData))
+                self.log.error(f"monitorData != idealData: monitorData = {(int(monitorData))} idealData = {int(idealData)}, i = {i}")
                 errors = errors + 1
         return errors
 
