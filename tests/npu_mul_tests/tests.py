@@ -12,9 +12,10 @@ from npu_mul_tb import npu_mul_tb
 import random
 
 period_ns = 10
-M_bits = 4
-N_bits = 4
+M_bits = 8
+N_bits = 8
 fmt = QFormat(N_bits, M_bits)
+random_test_batch = 1000
 
 @cocotb.test()
 async def pos_neg_entry_test(dut):
@@ -106,16 +107,16 @@ async def neg_neg_entry_test(dut):
 # TODO: Dodaj testy dla krańców zakresów    
 
 @cocotb.test()
-async def random_entry_test(dut):
+async def random_data_from_range_minus_1_1_test(dut):
     idealCaseQueue = asyncio.Queue()
 
     # Instantiate testbnch
     tb = npu_mul_tb(dut, idealCaseQueue)
 
-    for i in range(0, 10000):
+    for i in range(0, random_test_batch):
         # Generating random bits 
-        a = fmt.from_raw(random.getrandbits(int((N_bits + M_bits) / 2)))
-        b = fmt.from_raw(random.getrandbits(int((N_bits + M_bits) / 2)))
+        a = fmt.from_float(random.uniform(-1, 1), saturate=False)
+        b = fmt.from_float(random.uniform(-1, 1), saturate=False)
         c = a * b
     
         await tb.driver.send(a.uraw(), b.uraw())

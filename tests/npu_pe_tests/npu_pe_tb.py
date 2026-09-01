@@ -6,6 +6,7 @@ import asyncio
 # Random generator
 import random
 import logging
+from QFormat import FixedQ, QFormat
 
 class npu_pe_monitor:
     def __init__(self, name, dut, clk, rstn, ready, x_data, y_data, x_outQueue, y_outQueue):
@@ -109,12 +110,13 @@ class npu_pe_driver:
 
 
 class npu_pe_Scoreboard:
-    def __init__(self, name, x_idealCaseQueue, x_monitorQueue, y_idealCaseQueue, y_monitorQueue):
+    def __init__(self, name, x_idealCaseQueue, x_monitorQueue, y_idealCaseQueue, y_monitorQueue, fmt):
         self._x_idealCaseQueue = x_idealCaseQueue
         self._x_monitorQueue = x_monitorQueue
         self._y_idealCaseQueue = y_idealCaseQueue
         self._y_monitorQueue = y_monitorQueue
         self._name = name 
+        self._fmt = fmt
         self._log = logging.getLogger(self._name)
         self._log.setLevel(logging.INFO)
     
@@ -124,39 +126,37 @@ class npu_pe_Scoreboard:
 
         if self._x_monitorQueue.qsize() != self._x_idealCaseQueue.qsize():
             errors = -1
-            self._log.error("Input is not the size as expected, monitor queue size = ", self._monitorQueue.qsize(), ", ideal queue size = ", self._idealCaseQueue.qsize())
+            self._log.error("Input is not the size as expected, x monitor queue size = ", self._x_monitorQueue.qsize(), ", x ideal queue size = ", self._x_idealCaseQueue.qsize())
             return errors
         
         if self._y_monitorQueue.qsize() != self._y_idealCaseQueue.qsize():
             errors = -1
-            self._log.error("Input is not the size as expected, monitor queue size = ", self._monitorQueue.qsize(), ", ideal queue size = ", self._idealCaseQueue.qsize())
+            self._log.error("Input is not the size as expected, y monitor queue size = ", self._y_monitorQueue.qsize(), ", y ideal queue size = ", self._y_idealCaseQueue.qsize())
             return errors
 
-        while self._x_monitorQueue.empty() == False:
+        while self._x_monitorQueue.empty() == False and self._y_monitorQueue.empty() == False:
             i = i + 1
-            monitorResult = await self._x_monitorQueue.get()
-            idealResult = await self._x_idealCaseQueue.get()
-            if  monitorResult != idealResult:
+            monitorResultX = await self._x_monitorQueue.get()
+            idealResultX = await self._x_idealCaseQueue.get()
+            if int(monitorResultX) != idealResultX:
                 errors = errors + 1
-                self._log.error("Value Error: Expected output = ", idealResult, ", Monitor output: ", monitorResult, ", iter = ", i)
-
-        while self._y_monitorQueue.empty() == False:
-            i = i + 1
-            monitorResult = await self._y_monitorQueue.get()
-            idealResult = await self._y_idealCaseQueue.get()
-            if  monitorResult != idealResult:
+                self._log.error(f"Value Error X: Expected output = {int(idealResultX)} Monitor output = {int(monitorResultX)}, iter = {i}")
+            monitorResultY = await self._y_monitorQueue.get()
+            idealResultY = await self._y_idealCaseQueue.get()
+            if int(monitorResultY) != idealResultY:
                 errors = errors + 1
-                self._log.error("Value Error: Expected output = ", idealResult, ", Monitor output: ", monitorResult, ", iter = ", i)
+                self._log.error(f"Value Error Y: Expected output = {int(idealResultY)} Monitor output = {int(monitorResultY)}, iter = {i}")
         return errors
 
 
 class npu_pe_tb:
-    def __init__(self, dut, x_idealCaseQueue, y_idealCaseQueue):
+    def __init__(self, dut, x_idealCaseQueue, y_idealCaseQueue, m_bits, n_bits):
         self._dut = dut
         self._x_monitorQueue = asyncio.Queue()
         self._x_idealCaseQueue = x_idealCaseQueue
         self._y_monitorQueue = asyncio.Queue()
         self._y_idealCaseQueue = y_idealCaseQueue
+        self._fmt = QFormat(n_bits, m_bits)
 
 
         self.driver = npu_pe_driver(
@@ -190,6 +190,7 @@ class npu_pe_tb:
             x_monitorQueue=self._x_monitorQueue,
             y_idealCaseQueue=self._y_idealCaseQueue,
             y_monitorQueue=self._y_monitorQueue,
+            fmt=self._fmt,
             name="npu_pe_Scoreboard",
             
         )
