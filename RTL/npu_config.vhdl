@@ -11,4 +11,6 @@ package npu_config is
 
     constant C_PE_LATENCY   : natural := C_DATA_WIDTH + 3;
 
+    constant C_PE_LATENCY   : natural := C_DATA_WIDTH + 3;
+
 end package npu_config;
